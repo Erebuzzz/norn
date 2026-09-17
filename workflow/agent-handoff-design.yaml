@@ -1,0 +1,104 @@
+status: sparse_field_nordic_amoled_glass
+updated: 2026-09-18
+workspace: D:/Creance
+product: Creance mandate control plane
+
+pixasso:
+  phase: signed_off
+  genome: workflow/design/design-genome.yaml
+  genome_status: validated_with_overrides
+  brain: workflow/design/design-brain.md
+  discovery: workflow/design/discovery-questions.md
+  genome_validation_gate: PASSED
+
+interim_ui:
+  status: symmetric_centered_field
+  direction: refine
+  ia: [Mandate, Evaluate, Verdict, Pendle, Audit]
+  layout: symmetric_centered_field
+  density: airy_symmetric
+  theme: dual_daylight_amoled
+  glass: liquid_glass_islands
+  typography: sora_manrope_jetbrains_mono
+  logo: vault_gate_svg
+  dimensionality: light_2_5d_atmosphere
+  files:
+    - index.html
+    - src/styles.css
+    - src/main.js
+    - public/creance-mark.svg
+    - public/favicon.svg
+
+validated_answers:
+  Q1: solemn_vault
+  Q2: refine
+  Q3: vault_gate
+  Q4: dual_amoled
+  Q5: oxide_verdant
+  Q6: sora_manrope_jetbrains
+  Q7: light_2_5d
+  Q8: restrained
+  Q9: symmetric_centered_field
+  Q10: full_stage_pendle
+
+live_binding:
+  verdict: CAP_001 / AWAITING_HUMAN / CLEAR + txHash via /api/agent/evaluate|approve
+  pendle: PENDLE_PT_USDC evaluate → YIELD_005 + proof
+  audit: log.events with txHash / explorerUrl
+  note: Proof row prefers 0x hash; policy code stays on #policyCodeLabel
+
+layout_structure:
+  canvas: "centered max-width 1160px; equal L/R gutters"
+  grid: "symmetric 1fr 1fr (desktop); 1-col stack ≤900px"
+  rhythm: "--island-gap clamp(2.75rem, 6vh, 4.5rem); mobile ~2.25–3.5rem"
+  symmetry: "NO stagger / NO left-soft or right-wide offsets; equal columns; verdict full-span"
+  islands:
+    - stage-mandate: col1 equal
+    - stage-evaluate: col2 equal (same top edge)
+    - stage-verdict: span both, full canvas width
+    - stage-pendle: col1 equal
+    - stage-audit: col2 equal (same top as pendle)
+  tokens:
+    fonts: "Sora / Manrope / JetBrains Mono"
+    dark_bg: "#000 / #050505 AMOLED"
+    glass: "blur(18px) + green-edge; fallback solid glass-strong"
+  mobile: single column centered; airy row-gap only
+
+remaining_polish: []
+do_not_redesign: true
+user_override_2026_09_18: >
+  Layout must stay SYMMETRIC (balanced/centered). Blank-right left-rail bug fixed
+  via equal 2-col grid on centered ~1160px canvas. Explicitly NOT asymmetric stagger.
+browser_qa:
+  status: PASSED_LAYOUT_SYMMETRIC
+  date: 2026-09-18
+  url: http://127.0.0.1:5173/
+  api: http://127.0.0.1:8787 (Ganache local policy)
+  fixes_applied:
+    - "Symmetric equal-column grid; removed island max-width + stagger offsets; --max 1160px"
+  beats:
+    theme_toggle:
+      result: PASS
+      notes: "light --bg0 #d5ddd8; AMOLED dark --bg0 #000000; #themeToggle / #themeLabel OK"
+    cap_001_reject:
+      result: PASS
+      notes: "boot evaluate $150k AAPL → CAP_001 Blocked + reasonTx 0x…; approve disabled"
+    raise_ceiling_reeval_approve:
+      result: PASS
+      notes: "slider 50% → MANDATE tx; re-eval → AWAITING_HUMAN; approve → CLEAR / Executed + TradeExecuted tx"
+    pendle_yield_005:
+      result: PASS
+      notes: "Evaluate Pendle allocate → YIELD_005 badge + pendleTx 0x…; verdict visible"
+    audit_hashes:
+      result: PASS
+      notes: "audit list shows Policy checked + Approval rejected with 0x titles"
+    mobile_390:
+      result: PASS
+      notes: "vw 390; single col centered; equal side margins; no stagger"
+  desktop_1440: "symmetric equal cols; centered canvas; no empty right void"
+  amoled: bg0 #000; glass islands intact
+  mobile_390: single col centered; no crush
+  qa_note: >
+    POST /api/treasury/reset restores off-chain state and re-syncs on-chain
+    mandate to default equity ceiling (0.3) when the policy gateway is live.
+    CAP_001 should fire again without restarting npm run api.
