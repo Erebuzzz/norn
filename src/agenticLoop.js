@@ -46,7 +46,7 @@
  * @property {string[]} equityTickers  which holdings count toward the aggregate equity ceiling
  */
 
-const STABLECOINS = ['USDC', 'USDT'];
+const STABLECOINS = ['USDG', 'USDC', 'USDT'];
 
 const usdFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 });
 const formatUsd = (value) => usdFormatter.format(value);
@@ -109,12 +109,19 @@ function hasVerifiedSource(market, prefixes) {
 // ---------------------------------------------------------------------------
 
 function createAuditLog() {
-  /** @type {{ timestamp: number, event: string, detail: string, code: string }[]} */
+  /** @type {{ timestamp: number, event: string, detail: string, code: string, txHash?: string, explorerUrl?: string }[]} */
   const events = [];
   return {
     events,
-    emit(event, detail, code = '') {
-      const entry = { timestamp: Date.now(), event, detail, code };
+    emit(event, detail, code = '', meta = {}) {
+      const entry = {
+        timestamp: Date.now(),
+        event,
+        detail,
+        code,
+        ...(meta.txHash ? { txHash: meta.txHash } : {}),
+        ...(meta.explorerUrl ? { explorerUrl: meta.explorerUrl } : {}),
+      };
       events.push(entry);
       return entry;
     },
@@ -137,7 +144,7 @@ function createAuditLog() {
  * @returns {Intent}
  */
 function treasurerAgent(portfolio, market, mandate, override) {
-  const from = override?.from ?? 'USDC';
+  const from = override?.from ?? 'USDG';
   const to = override?.to ?? 'AAPL';
   const amountUsd = override?.amountUsd ?? Math.round(portfolio.totalValue * 0.05);
   return {
@@ -348,9 +355,11 @@ function policyOfficerAgent(intent, risk, mandate, portfolio) {
     };
   }
 
-  const usdcBalance = portfolio.holdings['USDC'] ?? 0;
+  const liquidBalance = STABLECOINS.reduce((sum, ticker) => sum + (portfolio.holdings[ticker] ?? 0), 0);
   const liquidAfter =
-    usdcBalance - (intent.from === 'USDC' ? intent.amountUsd : 0) + (intent.to === 'USDC' ? intent.amountUsd : 0);
+    liquidBalance -
+    (STABLECOINS.includes(intent.from) ? intent.amountUsd : 0) +
+    (STABLECOINS.includes(intent.to) ? intent.amountUsd : 0);
   if (liquidAfter < mandate.liquidityFloor) {
     return {
       permitted: false,
@@ -403,10 +412,11 @@ async function defaultExecutor(intent) {
  * @param {Mandate} params.mandate
  * @param {{ from: string, to: string, amountUsd: number, reason?: string }} [params.proposalOverride]
  * @param {(portfolio: Portfolio, market: MarketSnapshot, mandate: Mandate) => Intent} [params.proposeFn]
- * @param {(intent: Intent) => Promise<{ txHash: string }>} [params.onchainExecuteFn]
+ * @param {(intent: Intent) => Promise<{ txHash: string, explorerUrl?: string }>} [params.onchainExecuteFn]
+ * @param {(ctx: { intent: Intent, risk: RiskAssessment, policy: PolicyResult, portfolio: Portfolio, mandate: Mandate }) => Promise<{ txHash?: string, explorerUrl?: string, permitted?: boolean, code?: string, reason?: string, requiresHumanApproval?: boolean, intentId?: string } | void>} [params.onchainPolicyFn]
  * @param {(intent: Intent) => Promise<boolean>} [params.humanApprovalFn]
  * @param {number} [params.maxRetries]
- * @returns {Promise<{ outcome: 'EXECUTED' | 'REJECTED' | 'FROZEN' | 'AWAITING_HUMAN', log: ReturnType<typeof createAuditLog>, pendingIntent?: Intent }>}
+ * @returns {Promise<{ outcome: 'EXECUTED' | 'REJECTED' | 'FROZEN' | 'AWAITING_HUMAN', log: ReturnType<typeof createAuditLog>, pendingIntent?: Intent, pendingOnchainIntentId?: string, lastRisk?: RiskAssessment }>}
  */
 async function runAgenticLoop({
   portfolio,
@@ -415,10 +425,12 @@ async function runAgenticLoop({
   proposalOverride,
   proposeFn = treasurerAgent,
   onchainExecuteFn = defaultExecutor,
+  onchainPolicyFn,
   humanApprovalFn,
   maxRetries = 2,
 }) {
   const log = createAuditLog();
+  let pendingOnchainIntentId;
 
   let intent = proposeFn(portfolio, market, mandate, proposalOverride);
   log.emit('ProposalCreated', `${intent.reason} ($${formatUsd(intent.amountUsd)} ${intent.from} -> ${intent.to})`);
@@ -426,25 +438,52 @@ async function runAgenticLoop({
   for (let attempt = 0; attempt <= maxRetries; attempt += 1) {
     const risk = riskOfficerAgent(intent, portfolio, market, mandate);
     risk.criticalDepeg = risk.components.depegRisk >= mandate.depegCriticalThreshold;
-    log.emit('RiskVerified', `Safety score ${risk.safetyScore}/100. Depeg ${(risk.components.depegRisk * 100).toFixed(1)}%, concentration ${(risk.components.concentration * 100).toFixed(1)}%. Depeg data: ${risk.signalSources.depegRisk}.`);
+    log.emit(
+      'RiskVerified',
+      `Safety score ${risk.safetyScore}/100. Depeg ${(risk.components.depegRisk * 100).toFixed(1)}%, concentration ${(risk.components.concentration * 100).toFixed(1)}%. Depeg data: ${risk.signalSources.depegRisk}.`,
+    );
 
     if (risk.criticalDepeg) {
-      log.emit('EmergencyFreeze', `Depeg risk ${(risk.components.depegRisk * 100).toFixed(1)}% exceeds the critical threshold. New positions frozen regardless of the pending proposal.`, 'FREEZE_001');
-      return { outcome: 'FROZEN', log };
+      log.emit(
+        'EmergencyFreeze',
+        `Depeg risk ${(risk.components.depegRisk * 100).toFixed(1)}% exceeds the critical threshold. New positions frozen regardless of the pending proposal.`,
+        'FREEZE_001',
+      );
+      return { outcome: 'FROZEN', log, lastRisk: risk };
     }
 
-    const policy = policyOfficerAgent(intent, risk, mandate, portfolio);
-    log.emit('PolicyChecked', policy.reason, policy.code);
+    let policy = policyOfficerAgent(intent, risk, mandate, portfolio);
+    let chainMeta = {};
+    if (onchainPolicyFn) {
+      const chain = (await onchainPolicyFn({ intent, risk, policy, portfolio, mandate })) || {};
+      chainMeta = { txHash: chain.txHash, explorerUrl: chain.explorerUrl };
+      if (chain.intentId) pendingOnchainIntentId = chain.intentId;
+      if (typeof chain.permitted === 'boolean') {
+        policy = {
+          permitted: chain.permitted,
+          code: chain.code || policy.code,
+          reason: chain.reason || policy.reason,
+          requiresHumanApproval: Boolean(chain.requiresHumanApproval),
+        };
+      }
+    }
+
+    log.emit('PolicyChecked', policy.reason, policy.code, chainMeta);
 
     if (!policy.permitted) {
-      log.emit('ApprovalRejected', policy.reason, policy.code);
+      log.emit('ApprovalRejected', policy.reason, policy.code, chainMeta);
       if (attempt === maxRetries) {
-        return { outcome: 'REJECTED', log };
+        return { outcome: 'REJECTED', log, lastRisk: risk };
       }
       const revisedIntent = reviseIntent(intent, policy, mandate, portfolio);
       if (revisedIntent.amountUsd <= 0) {
-        log.emit('ApprovalRejected', 'No positive compliant amount remains after applying the rejected constraint.', policy.code);
-        return { outcome: 'REJECTED', log };
+        log.emit(
+          'ApprovalRejected',
+          'No positive compliant amount remains after applying the rejected constraint.',
+          policy.code,
+          chainMeta,
+        );
+        return { outcome: 'REJECTED', log, lastRisk: risk };
       }
       intent = revisedIntent;
       log.emit('ProposalCreated', `Revised: ${intent.reason} ($${formatUsd(intent.amountUsd)} ${intent.from} -> ${intent.to})`);
@@ -452,24 +491,37 @@ async function runAgenticLoop({
     }
 
     if (policy.requiresHumanApproval) {
-      log.emit('ApprovalRequested', `$${formatUsd(intent.amountUsd)} exceeds the auto-approval threshold; human sign-off required.`);
+      log.emit(
+        'ApprovalRequested',
+        `$${formatUsd(intent.amountUsd)} exceeds the auto-approval threshold; human sign-off required.`,
+        policy.code,
+        chainMeta,
+      );
       if (!humanApprovalFn) {
-        return { outcome: 'AWAITING_HUMAN', log, pendingIntent: intent };
+        return {
+          outcome: 'AWAITING_HUMAN',
+          log,
+          pendingIntent: intent,
+          pendingOnchainIntentId,
+          lastRisk: risk,
+        };
       }
       const approved = await humanApprovalFn(intent);
       if (!approved) {
         log.emit('ApprovalRejected', 'Human operator declined the proposed intent.', 'HUMAN_001');
-        return { outcome: 'REJECTED', log };
+        return { outcome: 'REJECTED', log, lastRisk: risk };
       }
     }
 
-    log.emit('ApprovalGranted', 'Intent cleared for execution.', policy.code);
-    const { txHash } = await onchainExecuteFn(intent);
-    log.emit('TradeExecuted', `${intent.from} -> ${intent.to}, $${formatUsd(intent.amountUsd)}.`, txHash);
-    return { outcome: 'EXECUTED', log };
+    log.emit('ApprovalGranted', 'Intent cleared for execution.', policy.code, chainMeta);
+    const exec = await onchainExecuteFn(intent, { risk, pendingOnchainIntentId });
+    log.emit('TradeExecuted', `${intent.from} -> ${intent.to}, $${formatUsd(intent.amountUsd)}.`, exec.txHash, {
+      txHash: exec.txHash,
+      explorerUrl: exec.explorerUrl,
+    });
+    return { outcome: 'EXECUTED', log, lastRisk: risk };
   }
 
-  // Unreachable, satisfies TS/JSDoc control-flow analysis.
   return { outcome: 'REJECTED', log };
 }
 
