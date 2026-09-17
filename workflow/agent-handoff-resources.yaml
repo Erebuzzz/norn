@@ -1,0 +1,113 @@
+# Agent handoff — hackathon resources intel
+# Product: Creance / Autonomous Treasury Cell
+# Updated: 2026-09-18
+# Authority: user-pasted Resources = ground truth; HackQuest Resource tab used to verify URLs
+
+meta:
+  event: "Arbitrum Open House Singapore: Online Buildathon"
+  canonical_url: "https://www.hackquest.io/hackathons/Arbitrum-Open-House-Singapore-Online-Buildathon"
+  broken_alias: "https://arbitrum-singapore.hackquest.io/buildathons/Arbitrum-Open-House-Singapore-Online-Buildathon"
+  intel_doc: "D:/Creance/workflow/hackathon-resources-intel.md"
+  product_brief: "D:/Creance/autonomous-treasury-cell.md"
+
+prize_snapshot_from_page:
+  total_usd: 115000
+  overall_usdc: 70000
+  promising_products_usdc: 15000
+  grants_usdc: 30000
+  tech_stack: [Solidity, Rust]
+  discord: "#open-house"
+  code_of_conduct: "https://openhouse.arbitrum.io/singapore_version_open_house_buildathon_terms___conditions.pdf"
+
+strategy_decisions:
+  language: Solidity
+  stylus: skip_v1
+  stylus_rationale: "Pendle + OZ + policy contracts are Solidity; Stylus is time risk with weak win signal for this product."
+  zerodev: must_use
+  zerodev_role: "Scoped executor smart account / session keys; never replace on-chain policy."
+  robinhood_chain: must_touch
+  robinhood_rationale: "Stock Token asset universe + docs/faucet in Resources; core demo chain. Not partner tourism."
+  pendle: stretch_on_arbitrum_only
+  pendle_note: "Use @pendle/core-v2 interfaces + 42161 deployments. No RH Pendle in public core. Do not fork core."
+
+must_use_max_8:
+  - id: solidity_quickstart
+    url: "https://docs.arbitrum.io/build-decentralized-apps/quickstart-solidity-remix"
+    also: "https://docs.arbitrum.io/"
+  - id: openzeppelin_solidity
+    url: "https://github.com/OpenZeppelin/openzeppelin-contracts"
+  - id: robinhood_chain_docs
+    url: "https://docs.robinhood.com/chain/"
+  - id: zerodev
+    url: "https://docs.zerodev.app/"
+  - id: faucet_arb_sepolia_eth
+    url: "https://arbitrum.faucet.dev/"
+    backups:
+      - "https://faucet.quicknode.com/arbitrum/sepolia"
+      - "https://www.l2faucet.com/arbitrum"
+  - id: faucet_circle_usdc
+    url: "https://faucet.circle.com/"
+  - id: faucet_robinhood_testnet
+    url: "https://faucet.testnet.chain.robinhood.com/"
+  - id: oracles_map
+    url: "https://docs.arbitrum.io/for-devs/oracles/oracles-content-map"
+
+optional:
+  - "https://docs.arbitrum.io/welcome/get-started"
+  - "https://docs.arbitrum.io/welcome/arbitrum-gentle-introduction"
+  - "https://docs.arbitrum.io/learn-more/faq"
+  - "https://docs.arbitrum.io/run-arbitrum-node/run-nitro-dev-node"
+  - "https://bridge.arbitrum.io/"
+  - "https://github.com/OffchainLabs/arbitrum-sdk"
+  - sepolia_l1_faucets:
+      - "https://sepoliafaucet.com/"
+      - "https://www.infura.io/faucet/sepolia"
+      - "https://sepolia-faucet.pk910.de/"
+  - mainnet_rpcs_from_paste:
+      - "https://arb1.arbitrum.io/rpc"
+      - "https://rpc.ankr.com/arbitrum"
+      - "https://arbitrum.llamarpc.com"
+
+skip_v1:
+  - "https://docs.arbitrum.io/stylus/quickstart"
+  - "https://docs.arbitrum.io/stylus/gentle-introduction"
+  - "https://docs.arbitrum.io/stylus"
+  - "https://stylus-by-example.org"
+  - "https://github.com/OffchainLabs/cargo-stylus"
+  - "https://github.com/OffchainLabs/stylus-sdk-rs"
+  - "https://github.com/OpenZeppelin/rust-contracts-stylus"
+
+gaps:
+  - "Resources paste RPC list is Arbitrum One only; Sepolia/RH RPC must come from Get Started docs, not invented."
+  - "HackQuest 'Quickstart: Arbitrum bridge' title had broken href; use bridge.arbitrum.io + Arbitrum docs."
+
+demo_env_checklist:
+  arb_sepolia:
+    - owner_wallet
+    - zerodev_executor_session_key
+    - eth_from_arbitrum_faucet_dev
+    - usdc_from_circle_faucet
+    - policy_contract_solidity_oz
+    - smoke_reject_then_accept
+  robinhood_testnet:
+    - docs_robinhood_chain
+    - faucet_robinhood_testnet
+    - stock_token_allowlist_same_policy_pattern
+  pendle_stretch:
+    - npm: "@pendle/core-v2"
+    - repo: "https://github.com/pendle-finance/pendle-core-v2-public"
+    - arb_one_router: "0x888888888889758F76e7103c6CbF23ABbF58F946"
+    - deployment_file: "deployments/42161-core.json"
+    - integrate: "IPMarket / IPAllActionV3 / IStandardizedYield only; policy-cap PT exposure"
+
+next_agents:
+  build:
+    - "Implement Solidity policy + execution controller with OZ; deploy Arb Sepolia then RH testnet."
+    - "Wire ZeroDev session key executor; emit decision-trail events."
+    - "Do not start Stylus workstreams."
+  strategy:
+    - "Primary judge path: RH Stock Token mandate reject/accept demo."
+    - "Secondary: Arb Sepolia USDC + optional Pendle yield sleeve under same caps."
+    - "Position as treasury control plane; avoid AI-fund framing and hackathon jargon in product UI."
+
+handoff_status: complete
