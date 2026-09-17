@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Creance is a policy-enforced autonomous treasury control plane." />
+    <title>Creance | Treasury mandate</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+    <header class="topbar">
+      <a class="brand" href="#overview" aria-label="Creance home"><span class="brand-mark">C</span><span>creance</span></a>
+      <div class="network-status"><span class="status-dot"></span><span>Policy engine connected</span></div>
+      <div class="topbar-actions">
+        <button id="themeToggle" class="theme-toggle glass-control" type="button" aria-pressed="true" title="Switch theme">
+          <span class="theme-glyph" aria-hidden="true">◐</span><span id="themeLabel">AMOLED</span>
+        </button>
+        <button class="account-button glass-control" type="button">Northstar Treasury <span aria-hidden="true">↗</span></button>
+      </div>
+    </header>
+    <main id="overview">
+      <section class="hero" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Treasury control plane <span>•</span> mandate #TC-019</p>
+          <h1 id="page-title">Capital moves only<br />when the mandate agrees.</h1>
+          <p class="lede">An independent policy layer evaluates every autonomous intent before money moves. Review the proposal, its risk posture, and the exact enforcement result below.</p>
+        </div>
+        <div class="hero-stamp"><span class="stamp-ring">ENFORCEABLE • AUDITABLE • REVOCABLE • </span><span class="stamp-core">01</span></div>
+      </section>
+
+      <section class="summary-grid" aria-label="Treasury summary">
+        <article class="metric-card balance-card"><p>Managed balance</p><strong>$1,000,000</strong><span class="metric-note">across 5 permitted assets</span></article>
+        <article class="metric-card"><p>Liquid reserve</p><strong>70.0%</strong><div class="meter"><i style="width:70%"></i></div><span class="metric-note">minimum 40.0%</span></article>
+        <article class="metric-card"><p>Stock Token exposure</p><strong id="equityExposure">30.0%</strong><div class="meter amber"><i id="equityMeter" style="width:60%"></i></div><span class="metric-note">policy ceiling <span id="ceilingLabel">30.0%</span></span></article>
+        <article class="metric-card"><p>Mandate health</p><strong class="health">Sound</strong><span class="metric-note">no active policy breaches</span></article>
+      </section>
+
+      <section class="workspace" aria-label="Proposal review workspace">
+        <article class="proposal panel">
+          <div class="panel-heading"><div><p class="eyebrow">Intent 024</p><h2>Increase AAPL exposure</h2></div><span id="proposalBadge" class="badge blocked">Blocked</span></div>
+          <div class="intent-flow"><span>USDC</span><b aria-hidden="true">→</b><span>AAPL Stock Token</span></div>
+          <dl class="proposal-facts"><div><dt>Notional</dt><dd>$150,000</dd></div><div><dt>Expected allocation</dt><dd>15.0%</dd></div><div><dt>Validity</dt><dd>14 min</dd></div><div><dt>Max slippage</dt><dd>0.35%</dd></div></dl>
+          <div class="reason-box" id="reasonBox"><span class="reason-mark">!</span><div><strong id="reasonTitle">Mandate breach detected</strong><p id="reasonText">The proposed purchase raises Stock Token exposure from 30.0% to 45.0%, above the current 30.0% ceiling.</p></div></div>
+          <div class="proposal-actions"><button id="evaluateButton" class="button primary" type="button">Re-evaluate intent</button><button id="approveButton" class="button quiet" type="button" disabled>Approve intent</button></div>
+        </article>
+
+        <aside class="policy panel">
+          <div class="panel-heading"><div><p class="eyebrow">Live mandate</p><h2>Non-negotiable limits</h2></div><span class="lock" aria-label="Policy locked">⌘</span></div>
+          <div class="policy-control"><label for="equityLimit">Stock Token ceiling <output id="limitOutput" for="equityLimit">30%</output></label><input id="equityLimit" type="range" min="30" max="60" value="30" step="5" /><div class="range-labels"><span>30%</span><span>60%</span></div></div>
+          <ul class="policy-list"><li><span>Liquidity floor</span><strong>40.0%</strong><i class="pass">Pass</i></li><li><span>Daily spend budget</span><strong>$250,000</strong><i class="pass">Pass</i></li><li><span>Max slippage</span><strong>0.50%</strong><i class="pass">Pass</i></li><li><span>Asset allowlist</span><strong>5 assets</strong><i class="pass">Pass</i></li></ul>
+          <p class="policy-footnote">Policy changes require a signed owner action. This interactive control simulates a new signed mandate.</p>
+        </aside>
+      </section>
+
+      <section class="audit-section" aria-labelledby="audit-title">
+        <div class="section-heading"><div><p class="eyebrow">Decision trail</p><h2 id="audit-title">Auditable by default.</h2></div><p id="auditStatus" aria-live="polite">Intent 024 is pending correction.</p></div>
+        <ol id="auditList" class="audit-list"><li><time>09:41:02</time><span class="event-dot neutral"></span><div><strong>Proposal created</strong><p>Treasurer emitted REBALANCE intent 024.</p></div><code>0x7f…a91e</code></li><li><time>09:41:03</time><span class="event-dot neutral"></span><div><strong>Risk verified</strong><p>Liquidity, concentration, and slippage checks completed.</p></div><code>score 82</code></li><li id="policyEvent"><time>09:41:04</time><span class="event-dot fail"></span><div><strong>Policy rejected</strong><p>Stock Token ceiling would be exceeded.</p></div><code>CAP_001</code></li></ol>
+      </section>
+    </main>
+    <footer><span>Creance protocol interface</span><span>All actions are policy-bound</span></footer>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>
