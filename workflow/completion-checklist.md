@@ -33,7 +33,7 @@ Use this as the single source of truth for what is left. Mark items `[x]` as you
 - [ ] Optional: Circle USDC faucet ([https://faucet.circle.com/](https://faucet.circle.com/))
 - [ ] Fund Robinhood testnet ([https://faucet.testnet.chain.robinhood.com/](https://faucet.testnet.chain.robinhood.com/))
 - [x] Set `CREANCE_RPC_URL` (local shell / gitignored `.env` only)
-- [ ] Set `CREANCE_PRIVATE_KEY` (local only)
+- [x] Set `CREANCE_PRIVATE_KEY` (encrypted GitHub Actions secret; never committed)
 - [ ] `npm run compile` → `npm run deploy:policy`
 - [ ] Set `CREANCE_POLICY_ADDRESS` from deploy output
 - [x] Set `CREANCE_EXPLORER_BASE` (Arbscan Sepolia or RH explorer)
