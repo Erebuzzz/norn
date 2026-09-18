@@ -3,6 +3,7 @@
  */
 
 import http from 'node:http';
+import { readApiRuntimeConfig, corsHeaders } from './runtimeConfig.js';
 import { getChainConfig } from '../src/config/arbitrum.js';
 import { listPendleYieldSurfaces } from '../src/services/pendleYield.js';
 import { getExecutorModel } from '../src/services/zeroDevExecutor.js';
@@ -20,16 +21,14 @@ import {
   getGatewayStatus,
 } from '../src/services/agentService.js';
 
-const PORT = Number(process.env.CREANCE_API_PORT || 8787);
-const HOST = process.env.CREANCE_API_HOST || '127.0.0.1';
+const runtime = readApiRuntimeConfig();
+const { port: PORT, host: HOST, maxBodyBytes: MAX_BODY_BYTES, allowedOrigins: ALLOWED_ORIGINS } = runtime;
 
-function sendJson(res, status, body) {
+function sendJson(req, res, status, body) {
   const payload = JSON.stringify(body);
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,POST,PATCH,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    ...corsHeaders(req.headers.origin, ALLOWED_ORIGINS),
     'Cache-Control': 'no-store',
   });
   res.end(payload);
@@ -38,7 +37,16 @@ function sendJson(res, status, body) {
 function readBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on('data', (c) => chunks.push(c));
+    let size = 0;
+    req.on('data', (c) => {
+      size += c.length;
+      if (size > MAX_BODY_BYTES) {
+        reject(new Error(`Request body exceeds ${MAX_BODY_BYTES} bytes.`));
+        req.destroy();
+        return;
+      }
+      chunks.push(c);
+    });
     req.on('end', () => {
       const raw = Buffer.concat(chunks).toString('utf8');
       if (!raw) return resolve({});
@@ -58,17 +66,17 @@ async function handle(req, res) {
   const method = req.method || 'GET';
 
   if (method === 'OPTIONS') {
-    res.writeHead(204, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET,POST,PATCH,OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-    });
+    const headers = corsHeaders(req.headers.origin, ALLOWED_ORIGINS);
+    if (req.headers.origin && !headers['Access-Control-Allow-Origin']) {
+      return sendJson(req, res, 403, { error: 'Origin not allowed' });
+    }
+    res.writeHead(204, headers);
     return res.end();
   }
 
   try {
     if (method === 'GET' && path === '/api/health') {
-      return sendJson(res, 200, {
+      return sendJson(req, res, 200, {
         ok: true,
         service: 'creance-api',
         ts: Date.now(),
@@ -77,28 +85,28 @@ async function handle(req, res) {
     }
 
     if (method === 'GET' && path === '/api/treasury') {
-      return sendJson(res, 200, getTreasuryState());
+      return sendJson(req, res, 200, getTreasuryState());
     }
 
     if (method === 'POST' && path === '/api/treasury/reset') {
       const result = await resetTreasuryAndSyncChain();
-      return sendJson(res, 200, result.treasury);
+      return sendJson(req, res, 200, result.treasury);
     }
 
     if (method === 'PATCH' && path === '/api/treasury/mandate') {
       const body = await readBody(req);
       const result = await syncMandateOnChain(body);
-      return sendJson(res, 200, result.treasury);
+      return sendJson(req, res, 200, result.treasury);
     }
 
     if (method === 'POST' && path === '/api/treasury/revoke-delegate') {
       const result = await revokeExecutorDelegate();
-      return sendJson(res, 200, result);
+      return sendJson(req, res, 200, result);
     }
 
     if (method === 'GET' && path === '/api/market') {
       const snap = getTreasuryState();
-      return sendJson(res, 200, {
+      return sendJson(req, res, 200, {
         market: snap.market,
         riskBadges: snap.derived.riskBadges,
         riskDataBoundary:
@@ -107,35 +115,35 @@ async function handle(req, res) {
     }
 
     if (method === 'GET' && path === '/api/config/chain') {
-      return sendJson(res, 200, { ...getChainConfig(), liveGateway: getGatewayStatus(), executor: getExecutorModel() });
+      return sendJson(req, res, 200, { ...getChainConfig(), liveGateway: getGatewayStatus(), executor: getExecutorModel() });
     }
 
     if (method === 'GET' && path === '/api/yield/pendle') {
       const mode = url.searchParams.get('mode') === 'live_refs' ? 'live_refs' : 'mock';
-      return sendJson(res, 200, listPendleYieldSurfaces({ mode }));
+      return sendJson(req, res, 200, listPendleYieldSurfaces({ mode }));
     }
 
     if (method === 'GET' && path === '/api/audit') {
-      return sendJson(res, 200, { events: getAuditLog() });
+      return sendJson(req, res, 200, { events: getAuditLog() });
     }
 
     if (method === 'POST' && path === '/api/agent/evaluate') {
       const body = await readBody(req);
       const result = await evaluateProposal(body);
-      return sendJson(res, 200, result);
+      return sendJson(req, res, 200, result);
     }
 
     if (method === 'POST' && path === '/api/agent/approve') {
       const result = await approvePendingIntent();
       const status = result.error ? 409 : 200;
-      return sendJson(res, status, result);
+      return sendJson(req, res, status, result);
     }
 
-    return sendJson(res, 404, { error: 'Not found', path });
+    return sendJson(req, res, 404, { error: 'Not found', path });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     console.error(err);
-    return sendJson(res, 400, { error: message });
+    return sendJson(req, res, 400, { error: message });
   }
 }
 

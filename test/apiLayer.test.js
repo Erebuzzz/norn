@@ -121,3 +121,22 @@ describe('live policy gateway CAP_001', () => {
     assert.ok(blocked.log.events.some((e) => e.code === 'CAP_001'));
   });
 });
+
+import { readApiRuntimeConfig, corsHeaders } from '../server/runtimeConfig.js';
+
+describe('API runtime hardening', () => {
+  it('defaults CORS to local Vite origins instead of wildcard', () => {
+    const cfg = readApiRuntimeConfig({});
+    assert.deepEqual(corsHeaders('https://attacker.example', cfg.allowedOrigins), {});
+    assert.equal(
+      corsHeaders('http://localhost:5173', cfg.allowedOrigins)['Access-Control-Allow-Origin'],
+      'http://localhost:5173',
+    );
+  });
+
+  it('validates port, body limit, and configured origins', () => {
+    assert.throws(() => readApiRuntimeConfig({ CREANCE_API_PORT: '70000' }), /CREANCE_API_PORT/);
+    assert.throws(() => readApiRuntimeConfig({ CREANCE_MAX_BODY_BYTES: '0' }), /CREANCE_MAX_BODY_BYTES/);
+    assert.throws(() => readApiRuntimeConfig({ CREANCE_ALLOWED_ORIGINS: '*' }), /Invalid CREANCE_ALLOWED_ORIGINS/);
+  });
+});
