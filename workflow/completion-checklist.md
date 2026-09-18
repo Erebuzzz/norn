@@ -34,10 +34,10 @@ Use this as the single source of truth for what is left. Mark items `[x]` as you
 - [ ] Fund Robinhood testnet ([https://faucet.testnet.chain.robinhood.com/](https://faucet.testnet.chain.robinhood.com/))
 - [x] Set `CREANCE_RPC_URL` (local shell / gitignored `.env` only)
 - [x] Set `CREANCE_PRIVATE_KEY` (encrypted GitHub Actions secret; never committed)
-- [ ] `npm run compile` → `npm run deploy:policy`
-- [ ] Set `CREANCE_POLICY_ADDRESS` from deploy output
+- [x] `npm run compile` → `npm run deploy:policy`
+- [x] Set `CREANCE_POLICY_ADDRESS` from deploy output
 - [x] Set `CREANCE_EXPLORER_BASE` (Arbscan Sepolia or RH explorer)
-- [ ] Rehearse full 3-min path with clickable explorer links
+- [x] Rehearse full 3-min path with clickable explorer links
 - [ ] Prefer RH for Stock Token beat; Arb Sepolia as dry-run if needed
 
 See `workflow/deploy-readiness.md`.
@@ -67,7 +67,7 @@ See `workflow/deploy-readiness.md`.
 
 ## 5. Done bar
 
-- [ ] Public explorer txs for: reject, mandate change, approve, second reject
+- [x] Public explorer txs for: reject, mandate change, approve, second reject
 - [ ] Live demo URL
 - [x] Repo on `main` with merged PRs
 - [x] One-line thesis ready: agent proposes, mandate enforces
@@ -90,8 +90,21 @@ See `workflow/deploy-readiness.md`.
 | Item                            | Status |
 | ------------------------------- | ------ |
 | Funded testnet private key      | [x] Stored in encrypted vault; Arbitrum Sepolia wallet funded |
-| RPC URL (RH and/or Arb Sepolia) | [ ]    |
+| RPC URL (RH and/or Arb Sepolia) | [x] Arbitrum Sepolia public RPC used |
 | Optional ZeroDev project id     | [ ]    |
 | Hosting account                 | [ ]    |
 
 
+
+
+## Arbitrum Sepolia proof (2026-09-18)
+
+- Workflow: https://github.com/Erebuzzz/creance/actions/runs/35359937943
+- Policy: https://sepolia.arbiscan.io/address/0x75B5eac2737B9fb1b49e7CEB2D3423e3758b8c60
+- Deploy: https://sepolia.arbiscan.io/tx/0xc0975106fba2b4214211c33fd1fe421e94c373868a5d91a742a220ebb8f9a785
+- `CAP_001` reject: https://sepolia.arbiscan.io/tx/0x178e0ce70211a5c0b004699f14d1bfa3292600897fbf1dfcce6d9a857269c215
+- Mandate ceiling change: https://sepolia.arbiscan.io/tx/0xb0bd87debc4f8089bfdc64334f34645608cff59ed9c7a038da6d815d9fd485f6
+- Compliant evaluation: https://sepolia.arbiscan.io/tx/0xcd65df24286ec7c0922fab6893d1c52d9130e5fb28d11769759e014f23ff3159
+- Owner approval: https://sepolia.arbiscan.io/tx/0x45a108a35107a591df81ba62be9e593ab4bf6e4853bb654ef8da1099cc829c1e
+- Execution proof: https://sepolia.arbiscan.io/tx/0xc6d4dc0bb5c3b1a5a49bb51bff43c09b3ced4538f2d54702d2a12a0bc38d06bc
+- `YIELD_005` reject: https://sepolia.arbiscan.io/tx/0xe1ef1789485df5343733bf799068ff24f80612ac01ac635487f4de8dd238e59a
