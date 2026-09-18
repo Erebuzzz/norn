@@ -58,17 +58,17 @@ See `workflow/deploy-readiness.md`.
 
 ## 4. Ship surface
 
-- [ ] Host API (or single-box host)
-- [ ] Host frontend pointing at that API
+- [x] Host API (or single-box host)
+- [x] Host frontend pointing at that API
 - [x] Operator README: env vars, scripts, demo path (no event language in product UI)
-- [ ] Smoke hosted URL: CAP_001 → approve → Pendle → audit
+- [x] Smoke hosted URL: CAP_001 → approve → Pendle → audit
 
 
 
 ## 5. Done bar
 
 - [x] Public explorer txs for: reject, mandate change, approve, second reject
-- [ ] Live demo URL
+- [x] Live demo URL
 - [x] Repo on `main` with merged PRs
 - [x] One-line thesis ready: agent proposes, mandate enforces
 - [ ] Walkthrough recording (optional but strong)
@@ -92,7 +92,7 @@ See `workflow/deploy-readiness.md`.
 | Funded testnet private key      | [x] Stored in encrypted vault; Arbitrum Sepolia wallet funded |
 | RPC URL (RH and/or Arb Sepolia) | [x] Arbitrum Sepolia public RPC used |
 | Optional ZeroDev project id     | [ ]    |
-| Hosting account                 | [ ]    |
+| Hosting account                 | [x] Render Free API + Vercel Hobby frontend |
 
 
 
@@ -108,3 +108,12 @@ See `workflow/deploy-readiness.md`.
 - Owner approval: https://sepolia.arbiscan.io/tx/0x45a108a35107a591df81ba62be9e593ab4bf6e4853bb654ef8da1099cc829c1e
 - Execution proof: https://sepolia.arbiscan.io/tx/0xc6d4dc0bb5c3b1a5a49bb51bff43c09b3ced4538f2d54702d2a12a0bc38d06bc
 - `YIELD_005` reject: https://sepolia.arbiscan.io/tx/0xe1ef1789485df5343733bf799068ff24f80612ac01ac635487f4de8dd238e59a
+
+
+## Hosted demo proof (2026-09-18)
+
+- Frontend: https://creance-app.vercel.app/
+- API health: https://creance-api.onrender.com/api/health
+- API host: Render Free web service (spins down after 15 minutes idle; cold starts can take 50 seconds or more)
+- Hosted smoke: `CAP_001` reject → ceiling 50% → `AWAITING_HUMAN` → owner approval / execution → Pendle `YIELD_005` reject
+- Hosted smoke hashes are local Ganache demonstration proofs and are not public explorer links. The public Arbitrum Sepolia proof links above remain the durable chain evidence.
