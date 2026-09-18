@@ -4,7 +4,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
 ];
 
 export function readApiRuntimeConfig(env = process.env) {
-  const port = Number(env.CREANCE_API_PORT || 8787);
+  const port = Number(env.CREANCE_API_PORT || env.PORT || 8787);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error('CREANCE_API_PORT must be an integer from 1 to 65535.');
   }

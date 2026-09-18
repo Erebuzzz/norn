@@ -135,6 +135,7 @@ describe('API runtime hardening', () => {
   });
 
   it('validates port, body limit, and configured origins', () => {
+    assert.equal(readApiRuntimeConfig({ PORT: '10000' }).port, 10000);
     assert.throws(() => readApiRuntimeConfig({ CREANCE_API_PORT: '70000' }), /CREANCE_API_PORT/);
     assert.throws(() => readApiRuntimeConfig({ CREANCE_MAX_BODY_BYTES: '0' }), /CREANCE_MAX_BODY_BYTES/);
     assert.throws(() => readApiRuntimeConfig({ CREANCE_ALLOWED_ORIGINS: '*' }), /Invalid CREANCE_ALLOWED_ORIGINS/);
