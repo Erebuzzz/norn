@@ -21,8 +21,8 @@ Use this as the single source of truth for what is left. Mark items `[x]` as you
 - [x] Pendle allocate → `YIELD_005` + tx hash
 - [x] Audit timeline shows ordered events + hashes
 - [x] Reset restores 0.3 ceiling and CAP_001 still fires
-- [ ] Theme toggle: light + AMOLED
-- [ ] Desktop symmetric layout + ~390px usable
+- [x] Theme toggle: light + AMOLED
+- [x] Desktop symmetric layout + ~390px usable
 
 
 
@@ -32,11 +32,11 @@ Use this as the single source of truth for what is left. Mark items `[x]` as you
 - [x] Fund Arbitrum Sepolia gas ([https://arbitrum.faucet.dev/](https://arbitrum.faucet.dev/))
 - [ ] Optional: Circle USDC faucet ([https://faucet.circle.com/](https://faucet.circle.com/))
 - [ ] Fund Robinhood testnet ([https://faucet.testnet.chain.robinhood.com/](https://faucet.testnet.chain.robinhood.com/))
-- [ ] Set `CREANCE_RPC_URL` (local shell / gitignored `.env` only)
+- [x] Set `CREANCE_RPC_URL` (local shell / gitignored `.env` only)
 - [ ] Set `CREANCE_PRIVATE_KEY` (local only)
 - [ ] `npm run compile` → `npm run deploy:policy`
 - [ ] Set `CREANCE_POLICY_ADDRESS` from deploy output
-- [ ] Set `CREANCE_EXPLORER_BASE` (Arbscan Sepolia or RH explorer)
+- [x] Set `CREANCE_EXPLORER_BASE` (Arbscan Sepolia or RH explorer)
 - [ ] Rehearse full 3-min path with clickable explorer links
 - [ ] Prefer RH for Stock Token beat; Arb Sepolia as dry-run if needed
 
