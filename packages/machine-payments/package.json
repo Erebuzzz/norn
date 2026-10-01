@@ -1,0 +1,22 @@
+{
+  "name": "@norn/machine-payments",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./MachinePaymentAdapter": "./dist/MachinePaymentAdapter.js",
+    "./types": "./dist/types.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "viem": "^2.57.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

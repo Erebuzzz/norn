@@ -1,0 +1,14 @@
+{
+  "name": "@norn/config",
+  "version": "0.1.0",
+  "description": "Global configuration and network definitions for NORN protocol",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  }
+}

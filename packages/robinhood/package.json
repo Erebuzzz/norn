@@ -1,0 +1,46 @@
+{
+  "name": "@norn/robinhood",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Robinhood Chain and USDG integration package for NORN",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js",
+      "default": "./dist/config.js"
+    },
+    "./stock-tokens": {
+      "types": "./dist/stock-tokens.d.ts",
+      "import": "./dist/stock-tokens.js",
+      "default": "./dist/stock-tokens.js"
+    },
+    "./collateral": {
+      "types": "./dist/collateral.d.ts",
+      "import": "./dist/collateral.js",
+      "default": "./dist/collateral.js"
+    },
+    "./adapters": {
+      "types": "./dist/adapters.d.ts",
+      "import": "./dist/adapters.js",
+      "default": "./dist/adapters.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "viem": "^2.57.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

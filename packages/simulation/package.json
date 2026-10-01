@@ -1,0 +1,26 @@
+{
+  "name": "@norn/simulation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./AgentGenerator": "./dist/AgentGenerator.js",
+    "./ObligationGenerator": "./dist/ObligationGenerator.js",
+    "./BaselineSimulator": "./dist/BaselineSimulator.js",
+    "./StressEngine": "./dist/StressEngine.js",
+    "./Benchmark": "./dist/Benchmark.js",
+    "./types": "./dist/types.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "viem": "^2.57.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

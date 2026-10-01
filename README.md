@@ -1,104 +1,234 @@
-# Creance
+# NORN: Network for Obligation Routing & Netting
 
-Creance is a product prototype for policy-enforced treasury automation. It makes a distinction that matters: an agent may propose an action, but an independent mandate decides whether that action can execute.
-
-The first interface prototype includes a reviewable rebalance intent, a live mandate control, clear rejection reasons, and a decision timeline. It models a policy-control experience, not a trading terminal.
-
-The interface defaults to AMOLED dark mode. Use the `AMOLED` control in the top bar to switch themes. Liquid-glass treatment is limited to navigation and action chrome, while policy evidence remains opaque for contrast.
-
-## Run locally
-
-```powershell
-npm install
-npm run start
-```
-
-Open the local URL printed by Vite. Move the Stock Token ceiling to 45% or higher, select **Re-evaluate intent**, then approve the compliant intent. This simulates a newly signed mandate and does not interact with a network or wallet.
-
-## Current scope
-
-- Product-first interface prototype with no live chain integration.
-- Static treasury and risk figures that illustrate the intended decision flow.
-- Client-side policy simulation, including audit events generated during interaction.
-- Responsive, keyboard-operable controls and reduced-motion support.
-- Deterministic four-agent loop in `src/agenticLoop.js`, with a runnable demo and Node test coverage.
-- Risk output labels verified sources separately from conservative heuristic signals.
-
-## System design
-
-```mermaid
-flowchart LR
-    U[Treasury owner] --> M[Signed mandate]
-    A[Autonomous agent] --> I[Structured intent]
-    I --> R[Risk verification]
-    M --> P[Policy enforcement]
-    R --> P
-    P -->|compliant| E[Execution controller]
-    P -->|non-compliant| L[Immutable decision record]
-    E --> L
-```
-
-## Project layout
+Multilateral clearing and liquidity layer for autonomous machine payments.
 
 ```text
-.
-├── creance.md                   # Creance product and architecture brief
-├── index.html                   # Application markup
-├── src/
-│   ├── main.js                  # Policy simulation and audit interactions
-│   ├── agenticLoop.js           # Treasurer, Risk, Policy, and Executor loop
-│   ├── demo.js                  # Scripted verification beats
-│   └── styles.css               # Responsive visual system
-├── test/
-│   └── agenticLoop.test.js      # Deterministic loop and safety tests
-├── DESIGN_MODE.md               # Pixasso visual and interaction contract
-├── contracts/
-│   ├── CreancePolicy.sol        # On-chain policy gate and audit events
-│   └── README.md                # Off-chain to on-chain check mapping
-├── package.json                 # Local development commands
-└── code_review.md               # Implementation review
+Many threads. One settlement.
 ```
 
-## Next build phase
+---
 
-1. Replace static fixtures with a versioned policy schema and deterministic evaluator.
-2. Connect an authenticated owner flow for signed mandate updates and delegated-role revocation.
-3. Add verified price and risk data adapters, distinguishing source-backed data from heuristic signals.
-4. Bind `CreancePolicy.sol` to an execution controller and add deployment tests after the target network and oracle path are selected.
-5. Persist the audit trail with transaction references and event integrity checks.
+## Executive Summary
 
-## Agentic loop verification
+Autonomous agents, machine APIs, and micro-services create thousands of continuous, small economic obligations. Today, each interaction either triggers an independent onchain transaction or relies on closed bilateral payment channels. In a dense machine economy, settling every obligation independently causes excessive transaction overhead, high peak liquidity requirements, and systemic liquidity fragmentation.
 
-```powershell
-node src/demo.js
-npm test
+NORN decouples obligation creation from onchain settlement:
+
+```text
+Obligation → Clear → Net → Settle
 ```
 
-The loop currently reproduces the five required outcomes from `AGENTIC_LOOP_SPEC.md`. It uses a no-op executor by default, accepts an injected executor, and drives the browser timeline. The browser and Solidity layers remain separate until a versioned policy schema, verified accounting, and a chain adapter are finalized.
+AI agents create cryptographically signed payment obligations (via EIP-712 or x402 commitments). NORN aggregates these obligations across the entire network, runs deterministic multilateral netting algorithms subject to solvency and reserve constraints, and settles the minimal necessary net balance on Arbitrum and Robinhood Chain.
 
-## Operator runbook
+---
 
-The API defaults to `127.0.0.1:8787`, accepts browser requests only from the local Vite origins, and limits JSON bodies to 1 MiB. For a hosted build, set explicit values instead of opening CORS globally:
+## Architectural Overview
 
+```mermaid
+flowchart TD
+    subgraph MachineEconomy["Autonomous Machine Economy"]
+        A1["Agent A (Research)"]
+        A2["Agent B (Data Aggregator)"]
+        A3["Agent C (Inference Provider)"]
+        A4["Agent D (Storage / Compute)"]
+    end
+
+    subgraph ObligationLayer["Obligation Layer (EIP-712 / x402)"]
+        O1["Obligation A -> B ($100)"]
+        O2["Obligation B -> C ($80)"]
+        O3["Obligation C -> A ($90)"]
+        O4["Obligation A -> C ($50)"]
+        O5["Obligation C -> B ($20)"]
+    end
+
+    subgraph ClearingEngine["NORN Clearing & Netting Engine"]
+        N1["Graph Ingestion & Signature Verification"]
+        N2["Bilateral & Multilateral Cycle Netting"]
+        N3["Liquidity Constraints & Reserve Gate"]
+        N4["Epoch Settlement Plan (Merkle Tree Roots)"]
+    end
+
+    subgraph OnchainSettlement["Settlement Protocol (Robinhood Chain / Arbitrum)"]
+        C1["ClearingHouse.sol"]
+        C2["LiquidityManager.sol"]
+        C3["SettlementController.sol"]
+        C4["USDG / USDC Token Contracts"]
+    end
+
+    subgraph Observability["Live Telemetry & Control"]
+        Q1["QuickNode RPC & Event Streams"]
+        AR["NORN Arena (Mission Control Room)"]
+    end
+
+    A1 -->|Requests API| O1
+    A2 -->|Consumes Models| O2
+    A3 -->|Stores Context| O3
+    A1 -->|GPU Compute| O4
+    A3 -->|Data Feeds| O5
+
+    O1 & O2 & O3 & O4 & O5 --> N1
+    N1 --> N2
+    N2 --> N3
+    N3 --> N4
+
+    N4 -->|Commit Epoch Roots & Transfers| C1
+    C1 --> C2
+    C2 --> C3
+    C3 -->|Net Transfers Only| C4
+
+    C3 -->|Emits Settlement Events| Q1
+    Q1 --> AR
+
+    style MachineEconomy fill:#0C0F12,stroke:#283038,stroke-width:1px,color:#E7E4DB
+    style ObligationLayer fill:#151A1F,stroke:#9ED8E8,stroke-width:1px,color:#E7E4DB
+    style ClearingEngine fill:#151A1F,stroke:#8FB8A4,stroke-width:1px,color:#E7E4DB
+    style OnchainSettlement fill:#07090B,stroke:#D7664F,stroke-width:1px,color:#E7E4DB
+    style Observability fill:#0C0F12,stroke:#283038,stroke-width:1px,color:#E7E4DB
+```
+
+---
+
+## Obligation Lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Created: Agent signs EIP-712 obligation
+    Created --> Accepted: Verified signature, nonce, and expiry
+    Accepted --> Cleared: Multilateral netting matches obligations
+    Cleared --> Scheduled: Solvency and reserve constraints passed
+    Scheduled --> Settled: Onchain settlement transfer finalized
+    
+    Created --> Rejected: Invalid signature or counterparty frozen
+    Accepted --> Expired: Deadline elapsed before epoch execution
+    Accepted --> Cancelled: Mutual cancellation authorized
+    Scheduled --> Constrained: Liquidity shock triggers reserve violation
+    Constrained --> Scheduled: Recovery netting plan recomputed
+    Settled --> [*]
+```
+
+---
+
+## Mathematical Foundations of Netting
+
+For any participant $i$ in a clearing epoch with counterparty set $J$:
+
+### Gross Obligation Volume
+$$G = \sum_{i,j} O_{i \to j}$$
+
+### Net Settlement Position
+$$Net_i = \sum_{j} O_{j \to i} - \sum_{j} O_{i \to j}$$
+
+### Conservation Invariant
+$$\sum_{i} Net_i = 0$$
+
+### Liquidity and Solvency Bounds
+For every participant $i$, the required debit must satisfy available liquidity and approved credit lines:
+$$Debit_i \le AvailableLiquidity_i + ApprovedCredit_i$$
+
+Post-settlement liquidity must strictly preserve the mandatory reserve threshold:
+$$PostLiquidity_i = AvailableLiquidity_i - Debit_i \ge RequiredReserve_i$$
+
+---
+
+## Monorepo Layout
+
+```text
+norn/
+├── apps/
+│   ├── arena/              # NORN Arena: Financial Mission-Control Room & Crisis Simulator
+│   ├── web/                # NORN Landing: Protocol documentation and visual Loom experience
+│   └── api/                # High-throughput clearing engine and service orchestration API
+├── contracts/              # Production Solidity contracts (Foundry)
+│   ├── ClearingHouse.sol
+│   ├── EmergencyController.sol
+│   ├── LiquidityManager.sol
+│   ├── NORNParticipantRegistry.sol
+│   ├── ObligationRegistry.sol
+│   ├── RiskController.sol
+│   └── SettlementController.sol
+├── packages/
+│   ├── agents/             # Agent runtime and reference agent actors
+│   ├── chain/              # EVM client bindings (viem, wagmi, contracts ABI)
+│   ├── clearing/           # Graph cycle cancellation and multilateral netting engine
+│   ├── config/             # Shared constants, tokens, and chain parameters
+│   ├── machine-payments/   # x402 and typed obligation protocol adapters
+│   ├── quicknode/          # QuickNode RPC, Streams, and event normalization
+│   ├── risk/               # Dynamic risk regime engine (NORMAL, CONSTRAINED, DEFENSIVE, FROZEN)
+│   ├── robinhood/          # Robinhood Chain client and Stock Token / USDG adapters
+│   ├── sdk/                # @norn/sdk developer client library
+│   ├── simulation/         # Deterministic economic simulator (Genesis Crisis)
+│   └── ui/                 # Design system tokens and Loom visualization components
+├── services/               # Real machine micro-services producing live obligations
+│   ├── compute/
+│   ├── data/
+│   ├── inference/
+│   ├── search/
+│   └── weather/
+├── stylus/                 # Arbitrum Stylus Rust programs for compute-heavy verification
+│   ├── risk-functions/
+│   └── stress-engine/
+├── tests/                  # Fuzz, invariant, and integration test suites
+└── docs/                   # Specifications, architecture, and competitive intelligence
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js >= 20.0.0
+- pnpm >= 9.0.0
+- Foundry (`forge`, `cast`, `anvil`)
+- Rust and Cargo (for Stylus crates)
+
+### Installation
 ```bash
-CREANCE_API_HOST=0.0.0.0
-CREANCE_API_PORT=8787
-CREANCE_ALLOWED_ORIGINS=https://your-frontend.example
-CREANCE_MAX_BODY_BYTES=1048576
-VITE_CREANCE_API_BASE=https://your-api.example
+git clone https://github.com/Erebuzzz/creance.git norn
+cd norn
+pnpm install
 ```
 
-Remote policy mode also needs `CREANCE_RPC_URL`, `CREANCE_PRIVATE_KEY`, and `CREANCE_POLICY_ADDRESS`; use `CREANCE_EXPLORER_BASE` for transaction links. Keep all secrets in the process environment or a secret manager. Never put them in Vite variables, source files, commits, or logs.
-
-Verification order:
-
+### Running Tests
 ```bash
-npm install
-npm test
-npm run compile
-npm run demo:chain
-npm run api
-npm start
+# Run unit and invariant tests across all packages
+pnpm test
+
+# Run Solidity smart contract tests with Foundry
+forge test -vvv
 ```
 
-The demo thesis is: **the agent proposes; the mandate enforces.** The expected chain path is `CAP_001` reject, ceiling update, owner-approved execution, then `YIELD_005` reject, with ordered audit events and transaction hashes.
+### Running NORN Arena
+```bash
+pnpm dev:arena
+```
+
+---
+
+## Documentation & Developer Resources
+
+Complete technical documentation, architecture specifications, and deployment runbooks are located in `docs/`:
+
+- [System Architecture](file:///docs/ARCHITECTURE.md): Full mechanism breakdown, contracts, and Mermaid diagrams.
+- [Competitive Positioning](file:///docs/COMPETITIVE_POSITIONING.md): Comparative analysis versus existing Open House submissions and x402 batch scheme.
+- [Deployment Guide](file:///docs/DEPLOYMENT.md): Step-by-step rollout on Robinhood Chain and Arbitrum Sepolia.
+- [Judge Walkthrough & Demo](file:///docs/DEMO.md): 3-minute demo script and Arena mission control runbook.
+- [Paxos USDG Integration](file:///docs/USDG_INTEGRATION.md): Settlement asset adapter, decimals, and safety bounds.
+- [Robinhood Chain Integration](file:///docs/ROBINHOOD_INTEGRATION.md): Network parameters, Stock Tokens, and RWA collateral haircuts.
+- [Stylus Compute Layer](file:///docs/STYLUS_ARCHITECTURE.md): Rust fixed-point math and numerical stress engine.
+- [Ecosystem Resources & Faucets](file:///docs/RESOURCES.md): Quick reference to official docs, faucets, RPCs, ZeroDev, and Stylus tools.
+
+---
+
+## Deployment & Verification
+
+NORN contracts are designed for Robinhood Chain and Arbitrum Sepolia testnets.
+Consult `docs/DEPLOYMENT.md` for deterministic deployment scripts, verification keys, and RPC configuration.
+
+---
+
+## License, Privacy & Security
+
+- **License:** Open source under the [MIT License](LICENSE).
+- **Privacy Policy:** Read our zero-PII architectural privacy commitment in [PRIVACY.md](PRIVACY.md).
+- **Security Policy:** Read our invariant security model and vulnerability disclosure protocol in [SECURITY.md](SECURITY.md).
+

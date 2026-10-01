@@ -1,0 +1,9 @@
+[package]
+name = "stress-engine"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+risk-functions = { path = "../risk-functions" }

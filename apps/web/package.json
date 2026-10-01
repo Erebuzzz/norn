@@ -1,0 +1,15 @@
+{
+  "name": "@norn/web",
+  "version": "0.1.0",
+  "description": "NORN Protocol landing experience and interactive Loom visualizer",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3002",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vite": "^6.0.0"
+  }
+}

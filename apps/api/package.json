@@ -1,0 +1,28 @@
+{
+  "name": "@norn/api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "NORN HTTP Clearing and Telemetry API Server",
+  "main": "dist/server.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/server.ts",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@norn/clearing": "workspace:*",
+    "@norn/simulation": "workspace:*",
+    "@norn/risk": "workspace:*",
+    "@norn/config": "workspace:*",
+    "@norn/chain": "workspace:*",
+    "@norn/quicknode": "workspace:*",
+    "@norn/robinhood": "workspace:*",
+    "viem": "^2.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.9.3"
+  }
+}

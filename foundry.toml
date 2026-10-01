@@ -1,0 +1,18 @@
+[profile.default]
+src = "contracts"
+out = "out"
+test = "tests/contracts"
+script = "scripts"
+libs = ["node_modules", "lib"]
+solc_version = "0.8.24"
+evm_version = "cancun"
+optimizer = true
+optimizer_runs = 200
+
+# Testing & Invariants
+fuzz = { runs = 256 }
+invariant = { runs = 64, depth = 32, fail_on_revert = true }
+
+[rpc_endpoints]
+arbitrum_sepolia = "${ARBITRUM_SEPOLIA_RPC_URL}"
+robinhood_testnet = "${ROBINHOOD_TESTNET_RPC_URL}"

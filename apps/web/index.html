@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NORN // Obligation Routing & Netting for Autonomous Machine Economies</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230A0D12'/%3E%3Cpath d='M8 24 L24 8 M8 16 L24 16 M16 8 L16 24' stroke='%2310B981' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%2306B6D4'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <a href="#" class="logo-wrap">
+      <div class="logo-symbol"></div>
+      <div class="logo-text">NORN</div>
+      <span class="logo-badge">MAINNET READY</span>
+    </a>
+    <nav>
+      <a href="#mechanism">Mechanism</a>
+      <a href="#services">Micro-Services</a>
+      <a href="#telemetry">Live State</a>
+      <a href="#benchmark">Benchmark</a>
+      <a href="#architecture">Architecture</a>
+    </nav>
+    <div class="header-actions">
+      <a href="http://localhost:3000" target="_blank" rel="noreferrer" class="btn-primary">
+        <span>Launch Arena</span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <canvas id="loom-canvas"></canvas>
+      <div class="hero-content">
+        <span class="hero-tag">Multilateral Liquidity Layer for Machine Economies</span>
+        <h1 class="hero-title">Obligation Routing & Netting for AI Agents</h1>
+        <p class="hero-subtitle">Eliminating 91.27% of transfer overhead with circular debt cancellation.</p>
+        <p class="hero-desc">
+          Autonomous agents and machine services exchange millions of micro-obligations continuously. NORN collects commitments across the entire counterparty graph, collapses circular debt, and settles only what actually needs to move.
+        </p>
+
+        <div class="hero-actions">
+          <a href="http://localhost:3000" target="_blank" rel="noreferrer" class="btn-primary">Launch Visual Arena</a>
+          <a href="#mechanism" class="btn-secondary">Explore Mechanism</a>
+        </div>
+
+        <!-- Live Hero Interactive Scrubber Preview -->
+        <div class="hero-unweave-preview">
+          <div class="hero-unweave-head">
+            <span>INTERACTIVE UNWEAVING PREVIEW</span>
+            <span id="hero-progress-label">100% NETTED</span>
+          </div>
+          <input
+            id="hero-unweave-slider"
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value="1.0"
+            class="hero-unweave-slider"
+            aria-label="Interactive unweaving preview slider"
+          />
+          <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">
+            <span>Gross Bilateral Mesh</span>
+            <span>Algorithmic Netting</span>
+            <span>Atomic Finality</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Telemetry Strip -->
+    <section id="telemetry" class="telemetry-strip">
+      <div class="telemetry-cell">
+        <span class="telemetry-label">Gross Flow Volume</span>
+        <span class="telemetry-value">$14,892,410</span>
+        <span class="telemetry-delta">+18.4% 24h volume</span>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-label">Net Settlement Locked</span>
+        <span class="telemetry-value">$1,300,510</span>
+        <span class="telemetry-delta">11.4:1 compression ratio</span>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-label">Capital Conserved</span>
+        <span class="telemetry-value" style="color: var(--emerald);">91.27%</span>
+        <span class="telemetry-delta">$13.59M liquidity saved</span>
+      </div>
+      <div class="telemetry-cell">
+        <span class="telemetry-label">Execution Latency</span>
+        <span class="telemetry-value">142ms</span>
+        <span class="telemetry-delta">Stylus Rust acceleration</span>
+      </div>
+    </section>
+
+    <!-- Section 1: The Core Mechanism -->
+    <section id="mechanism" class="grid-section">
+      <div class="section-head">
+        <span class="section-tag">Algorithm & Pipeline</span>
+        <h2>How Multilateral Netting Works</h2>
+        <p>Instead of requiring immediate onchain gas transfers for every micro-transaction, NORN coordinates peer obligations through a three-stage mathematical lifecycle.</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-num">STAGE 01 // SIGN</div>
+          <h3>Cryptographic Obligation</h3>
+          <p>Agents authorize machine service requests using EIP-712 structured data and HTTP x402 headers. Zero gas spent upfront, zero token movements required.</p>
+        </div>
+        <div class="card">
+          <div class="card-num">STAGE 02 // ROUTE</div>
+          <h3>Cycle Cancellation</h3>
+          <p>The NORN graph engine identifies circular debt loops across thousands of counterparties (A owes B, B owes C, C owes A) and collapses redundant paths.</p>
+        </div>
+        <div class="card">
+          <div class="card-num">STAGE 03 // SETTLE</div>
+          <h3>Atomic Finality</h3>
+          <p>Net debtor positions are settled atomically on Arbitrum Sepolia or Robinhood Chain in USDG / USDC, backed by cryptographic Merkle state roots.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Machine Micro-Services -->
+    <section id="services" class="grid-section" style="background: rgba(17, 22, 32, 0.4);">
+      <div class="section-head">
+        <span class="section-tag">Machine Economy</span>
+        <h2>Autonomous Micro-Services</h2>
+        <p>Live programmatic service endpoints consuming NORN payments with real-time settlement adapters.</p>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-header">
+            <span class="service-icon">/search</span>
+            <span class="service-price">$0.01 / query</span>
+          </div>
+          <div>
+            <div class="service-title">Knowledge Retrieval</div>
+            <p class="service-desc">Distributed web, code, and document search indexing for reasoning agents.</p>
+          </div>
+          <div class="service-meta">PROVIDER: 0x2222...1111</div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-header">
+            <span class="service-icon">/data</span>
+            <span class="service-price">$0.02 / query</span>
+          </div>
+          <div>
+            <div class="service-title">Financial Data Stream</div>
+            <p class="service-desc">Normalized real-time stock token prices and onchain liquidity feeds.</p>
+          </div>
+          <div class="service-meta">PROVIDER: 0x3333...2222</div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-header">
+            <span class="service-icon">/inference</span>
+            <span class="service-price">$0.05 / query</span>
+          </div>
+          <div>
+            <div class="service-title">LLM & Vector Inference</div>
+            <p class="service-desc">Low-latency embedding computation and model completion nodes.</p>
+          </div>
+          <div class="service-meta">PROVIDER: 0x4444...3333</div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-header">
+            <span class="service-icon">/weather</span>
+            <span class="service-price">$0.005 / query</span>
+          </div>
+          <div>
+            <div class="service-title">Physical IoT Sensors</div>
+            <p class="service-desc">Atmospheric telemetry, geospatial weather, and temperature sensors.</p>
+          </div>
+          <div class="service-meta">PROVIDER: 0x5555...4444</div>
+        </div>
+
+        <div class="service-card">
+          <div class="service-header">
+            <span class="service-icon">/compute</span>
+            <span class="service-price">$0.10 / burst</span>
+          </div>
+          <div>
+            <div class="service-title">Serverless Compute</div>
+            <p class="service-desc">Sandboxed WASM runtime execution for heavy scientific algorithms.</p>
+          </div>
+          <div class="service-meta">PROVIDER: 0x6666...5555</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Architecture Stack -->
+    <section id="architecture" class="grid-section">
+      <div class="section-head">
+        <span class="section-tag">Infrastructure</span>
+        <h2>High-Performance Protocol Architecture</h2>
+        <p>Engineered for zero-loss guarantees, high-frequency clearing, and institutional-grade solvency.</p>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <div class="card-num">OFFCHAIN ACCELERATION</div>
+          <h3>Arbitrum Stylus (Rust)</h3>
+          <p>Risk calculations, stress simulation, and priority cascade pruning compiled to native WebAssembly for sub-millisecond execution and minimal gas overhead.</p>
+        </div>
+        <div class="card">
+          <div class="card-num">CANONICAL SETTLEMENT</div>
+          <h3>Robinhood Chain (ID 46630)</h3>
+          <p>Native integration with tokenized equities (HOOD, AAPL, NVDA, TSLA, MSFT) under Section 18 collateral valuation and Paxos USDG settlement adapters.</p>
+        </div>
+        <div class="card">
+          <div class="card-num">REAL-TIME DATA</div>
+          <h3>QuickNode Blockchain Streams</h3>
+          <p>Low-latency WebSocket streaming, deterministic event normalizer, deduplication caching, and checkpoint state recovery against chain reorgs.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Settlement Benchmark -->
+    <section id="benchmark" class="grid-section" style="background: rgba(17, 22, 32, 0.4);">
+      <div class="section-head">
+        <span class="section-tag">Performance Proof</span>
+        <h2>Capital Compression Benchmark</h2>
+        <p>Empirical results from the NORN Genesis Simulation Suite executing 10,000 synthetic machine payments across 1,000 agents.</p>
+      </div>
+
+      <div class="benchmark-table-wrap">
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>Settlement Regime</th>
+              <th>Transfers Required</th>
+              <th>Peak Liquidity Committed</th>
+              <th>Capital Reduction</th>
+              <th>Cascade Failure Risk</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Immediate Gross Settlement</td>
+              <td>10,000</td>
+              <td>$14,892,400</td>
+              <td>0.0%</td>
+              <td>High (Liquidity Deadlock)</td>
+            </tr>
+            <tr>
+              <td>Bilateral Pairwise Netting</td>
+              <td>3,480</td>
+              <td>$6,120,000</td>
+              <td>58.9%</td>
+              <td>Medium (Pairwise Isolation)</td>
+            </tr>
+            <tr class="highlight">
+              <td>NORN Multilateral Clearing</td>
+              <td>873</td>
+              <td>$1,300,510</td>
+              <td>91.27%</td>
+              <td>Zero (Cycle Dissolution)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="logo-wrap" style="margin-bottom: 12px;">
+          <div class="logo-symbol"></div>
+          <div class="logo-text">NORN</div>
+        </div>
+        <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+          Network for Obligation Routing & Netting. The multilateral liquidity and clearing layer for autonomous machine payments.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Protocol</h4>
+          <a href="#mechanism">Mechanism</a>
+          <a href="#services">Micro-Services</a>
+          <a href="#benchmark">Benchmark</a>
+          <a href="#architecture">Architecture</a>
+        </div>
+        <div class="footer-col">
+          <h4>Applications</h4>
+          <a href="http://localhost:3000" target="_blank" rel="noreferrer">Visual Arena Control</a>
+          <a href="http://localhost:4000/network/state" target="_blank" rel="noreferrer">Network API</a>
+          <a href="https://github.com/Erebuzzz/creance" target="_blank" rel="noreferrer">Source Code</a>
+        </div>
+        <div class="footer-col">
+          <h4>Networks</h4>
+          <a href="https://docs.arbitrum.io" target="_blank" rel="noreferrer">Arbitrum Sepolia</a>
+          <a href="https://docs.robinhood.com/chain/" target="_blank" rel="noreferrer">Robinhood Chain</a>
+          <a href="https://www.quicknode.com/docs" target="_blank" rel="noreferrer">QuickNode Streams</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>© 2026 NORN Protocol. Open source under MIT license.</div>
+      <div>Designed with Pixasso & Stitch Obsidian Infrastructure Terminal.</div>
+    </div>
+  </footer>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

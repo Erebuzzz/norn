@@ -1,0 +1,14 @@
+{
+  "name": "@norn/sdk",
+  "version": "0.1.0",
+  "description": "NORN Developer SDK for autonomous machine agents and clearing workflows",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "test": "node --test tests/sdk.test.mjs"
+  },
+  "dependencies": {
+    "viem": "^2.21.0"
+  }
+}

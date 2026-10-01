@@ -1,0 +1,25 @@
+{
+  "name": "@norn/agents",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./CreanceAgent": "./dist/CreanceAgent.js",
+    "./types": "./dist/types.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@norn/machine-payments": "workspace:*",
+    "@norn/services": "workspace:*",
+    "@norn/simulation": "workspace:*",
+    "viem": "^2.57.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

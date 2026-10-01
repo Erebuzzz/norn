@@ -1,0 +1,26 @@
+{
+  "name": "@norn/services",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./search": "./dist/search/index.js",
+    "./data": "./dist/data/index.js",
+    "./inference": "./dist/inference/index.js",
+    "./weather": "./dist/weather/index.js",
+    "./compute": "./dist/compute/index.js",
+    "./types": "./dist/types.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "viem": "^2.57.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3"
+  }
+}

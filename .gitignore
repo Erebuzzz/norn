@@ -1,4 +1,34 @@
+# Dependencies
 node_modules/
-dist/
+.pnpm-store/
 .npm-cache/
+
+# Build artifacts
+dist/
+build/
+out/
 .solc-build/
+cache/
+artifacts/
+target/
+
+# Local Environment
+.env
+.env.local
+.env.*.local
+
+# Agent Internal Brain (strictly ignored, never committed)
+brain/
+
+# Implementation Plans & Internal Specs (never pushed)
+*PLAN*.md
+*plan*.md
+implementation_plan.md
+NORN_BUILD_PLAN.md
+
+# Temporary and test artifacts
+tmp-*
+*.tmp
+coverage/
+.DS_Store
+Thumbs.db
