@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/cover.jpg" alt="NORN: Network for Obligation Routing & Netting" width="100%" />
+</p>
+
 # NORN: Network for Obligation Routing & Netting
 
 Multilateral clearing and liquidity layer for autonomous machine payments.
@@ -15,6 +19,22 @@ Multilateral clearing and liquidity layer for autonomous machine payments.
 ```text
 Many threads. One settlement.
 ```
+
+---
+
+## Product Launch Video (/brag)
+
+> 20-second cinematic overview of NORN obligation unweaving, cycle canceling, and sub-second settlement on Arbitrum Stylus and Robinhood Chain.
+
+<p align="center">
+  <a href="assets/norn-launch.webm" title="Watch NORN Launch Video">
+    <img src="assets/brag.jpg" alt="NORN Product Launch Video Preview" width="100%" />
+  </a>
+</p>
+
+<p align="center">
+  <em>Click image above or open <a href="assets/norn-launch.webm"><code>assets/norn-launch.webm</code></a> to watch the 20-second launch video.</em>
+</p>
 
 ---
 
@@ -193,7 +213,7 @@ norn/
 
 ### Installation
 ```bash
-git clone https://github.com/Erebuzzz/creance.git norn
+git clone https://github.com/Erebuzzz/norn.git
 cd norn
 pnpm install
 ```
