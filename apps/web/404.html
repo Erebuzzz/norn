@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404: Topology Strand Severed // NORN Protocol</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230A0D12'/%3E%3Cpath d='M8 24 L24 8 M8 16 L24 16 M16 8 L16 24' stroke='%2310B981' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%2306B6D4'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0A0D12;
+      --surface: #111620;
+      --panel: #161D2B;
+      --border: #1E2638;
+      --border-subtle: #2A364F;
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --cyan: #06B6D4;
+      --emerald: #10B981;
+      --rose: #F43F5E;
+      --amber: #F59E0B;
+      --font-sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justifyContent: space-between;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient background grid */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(6, 182, 212, 0.08) 0%, transparent 60%),
+        linear-gradient(to right, rgba(30, 41, 59, 0.25) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(30, 41, 59, 0.25) 1px, transparent 1px);
+      background-size: 100% 100%, 48px 48px, 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justifyContent: space-between;
+      align-items: center;
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+    }
+
+    .brand-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2));
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 12px rgba(6, 182, 212, 0.3);
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: 0.06em;
+    }
+
+    .brand-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--cyan);
+      background-color: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      padding: 2px 6px;
+      border-radius: 2px;
+    }
+
+    main {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      flex: 1;
+    }
+
+    .error-card {
+      max-width: 620px;
+      width: 100%;
+      background-color: rgba(17, 22, 32, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 40px;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .error-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--rose), var(--amber), transparent);
+    }
+
+    .error-code-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--rose);
+      background-color: rgba(244, 63, 94, 0.12);
+      border: 1px solid rgba(244, 63, 94, 0.35);
+      padding: 4px 12px;
+      border-radius: 4px;
+      margin-bottom: 24px;
+      letter-spacing: 0.08em;
+    }
+
+    .error-code-badge span.pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--rose);
+      box-shadow: 0 0 8px var(--rose);
+      animation: blink 1.4s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .error-headline {
+      font-size: clamp(28px, 5vw, 36px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .error-subhead {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--cyan);
+      margin-bottom: 20px;
+      letter-spacing: 0.04em;
+    }
+
+    .error-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .terminal-box {
+      background-color: var(--panel);
+      border: 1px solid var(--border-subtle);
+      border-radius: 4px;
+      padding: 14px 16px;
+      margin-bottom: 32px;
+      text-align: left;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .terminal-box .term-row {
+      display: flex;
+      justifyContent: space-between;
+    }
+
+    .terminal-box .term-key {
+      color: var(--text-secondary);
+    }
+
+    .terminal-box .term-val {
+      color: var(--amber);
+      font-weight: 600;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-primary {
+      background-color: var(--cyan);
+      color: #0A0D12;
+      border: 1px solid var(--cyan);
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.3);
+    }
+
+    .btn-primary:hover {
+      background-color: #22D3EE;
+      box-shadow: 0 0 24px rgba(6, 182, 212, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: var(--panel);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background-color: #1A2234;
+      transform: translateY(-1px);
+    }
+
+    footer {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      justifyContent: space-between;
+      align-items: center;
+      padding: 16px 32px;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+
+  <header>
+    <a href="/" class="brand">
+      <div class="brand-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <span class="brand-title">NORN</span>
+      <span class="brand-badge">PROTOCOL</span>
+    </a>
+    <div style="font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+      STATUS: LEDGER_UNMAPPED
+    </div>
+  </header>
+
+  <main>
+    <div class="error-card">
+      <div class="error-code-badge">
+        <span class="pulse-dot"></span>
+        <span>ERROR 404 // TOPOLOGY_COORDINATE_NOT_FOUND</span>
+      </div>
+
+      <h1 class="error-headline">Obligation Strand Severed</h1>
+      <div class="error-subhead">Null settlement address in graph router</div>
+
+      <p class="error-desc">
+        The route you requested does not correspond to an active counterparty, settlement epoch, or visual coordinate in the NORN clearing network.
+      </p>
+
+      <div class="terminal-box">
+        <div class="term-row">
+          <span class="term-key">Target Route:</span>
+          <span id="route-display" class="term-val">window.location.pathname</span>
+        </div>
+        <div class="term-row">
+          <span class="term-key">Clearing Epoch:</span>
+          <span>#420 (STABLE)</span>
+        </div>
+        <div class="term-row">
+          <span class="term-key">Cycle Cancellation:</span>
+          <span>14 Rings Preserved</span>
+        </div>
+        <div class="term-row">
+          <span class="term-key">Diagnostic:</span>
+          <span style="color: var(--rose);">UNROUTABLE_COMMITMENT</span>
+        </div>
+      </div>
+
+      <div class="action-group">
+        <a href="/" class="btn btn-secondary">
+          <span>←</span>
+          <span>Protocol Overview</span>
+        </a>
+        <a href="/arena" class="btn btn-primary">
+          <span>Enter Mission Control Arena</span>
+          <span>→</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div>NORN // Multilateral Clearing & Liquidity Layer</div>
+    <div id="timestamp">UTC ACTIVE</div>
+  </footer>
+
+  <script>
+    const routeEl = document.getElementById('route-display');
+    if (routeEl) {
+      routeEl.textContent = window.location.pathname;
+    }
+    const timeEl = document.getElementById('timestamp');
+    if (timeEl) {
+      timeEl.textContent = new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+    }
+  </script>
+</body>
+</html>
