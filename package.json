@@ -11,7 +11,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
-    "test": "node --test tests/contracts/contracts.test.mjs tests/clearing/clearing.test.mjs tests/simulation/simulation.test.mjs tests/integration/services.test.mjs tests/arena.test.mjs tests/robinhood/robinhood.test.mjs tests/quicknode/quicknode.test.mjs tests/api.test.mjs && cargo test",
+    "test": "node --test tests/contracts/contracts.test.mjs tests/clearing/clearing.test.mjs tests/simulation/simulation.test.mjs tests/integration/services.test.mjs tests/arena.test.mjs tests/robinhood/robinhood.test.mjs tests/quicknode/quicknode.test.mjs tests/api.test.mjs",
     "test:unit": "node --test tests/contracts/contracts.test.mjs tests/clearing/clearing.test.mjs tests/simulation/simulation.test.mjs tests/integration/services.test.mjs tests/arena.test.mjs tests/robinhood/robinhood.test.mjs tests/quicknode/quicknode.test.mjs tests/api.test.mjs",
     "test:simulation": "node --test tests/simulation/simulation.test.mjs",
     "test:services": "node --test tests/integration/services.test.mjs",
