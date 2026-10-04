@@ -30,6 +30,32 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Mobile glass hamburger menu drawer
+  const menuBtn = document.getElementById("mobile-menu-btn");
+  const mobileDrawer = document.getElementById("mobile-drawer");
+
+  const toggleDrawer = (open?: boolean) => {
+    if (!menuBtn || !mobileDrawer) return;
+    const shouldOpen = open !== undefined ? open : !mobileDrawer.classList.contains("open");
+    menuBtn.classList.toggle("active", shouldOpen);
+    mobileDrawer.classList.toggle("open", shouldOpen);
+    menuBtn.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+    mobileDrawer.setAttribute("aria-hidden", shouldOpen ? "false" : "true");
+    document.body.style.overflow = shouldOpen ? "hidden" : "";
+  };
+
+  menuBtn?.addEventListener("click", () => toggleDrawer());
+
+  mobileDrawer?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => toggleDrawer(false));
+  });
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && mobileDrawer?.classList.contains("open")) {
+      toggleDrawer(false);
+    }
+  });
+
   // Smooth scroll for internal navigation links
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", (e) => {

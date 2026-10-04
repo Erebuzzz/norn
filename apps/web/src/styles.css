@@ -564,24 +564,225 @@ footer {
   gap: 12px;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Mobile Glass Hamburger & Full-Screen Blur Drawer */
+.mobile-menu-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 38px;
+  height: 38px;
+  background: rgba(17, 22, 32, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 8px;
+  z-index: 110;
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-btn span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: var(--text-primary);
+  border-radius: 2px;
+  transition: transform 0.25s ease, opacity 0.25s ease, background 0.25s ease;
+}
+
+.mobile-menu-btn.active {
+  border-color: var(--emerald);
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.mobile-menu-btn.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+  background: var(--emerald);
+}
+
+.mobile-menu-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+  background: var(--emerald);
+}
+
+/* Full-Screen Blur Drawer Menu */
+.mobile-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 105;
+  background: rgba(10, 13, 18, 0.96);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 88px 28px 40px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-12px);
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.mobile-drawer.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.mobile-drawer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mobile-drawer-link {
+  font-family: var(--font-sans);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-decoration: none;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.mobile-drawer-link:hover,
+.mobile-drawer-link:active {
+  color: var(--emerald);
+  padding-left: 6px;
+}
+
+.mobile-drawer-link span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.mobile-drawer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Responsive Adaptive Rules */
+@media (max-width: 900px) {
   header {
-    padding: 16px 20px;
+    padding: 14px 20px;
   }
   nav {
     display: none;
   }
+  .header-actions .btn-secondary {
+    display: none;
+  }
+  .mobile-menu-btn {
+    display: flex;
+  }
+}
+
+@media (max-width: 768px) {
   .hero-section {
-    padding: 40px 20px;
+    padding: 24px 16px 40px;
+    min-height: auto;
+  }
+  .hero-content {
+    padding: 24px 20px;
+    max-width: 100%;
   }
   .hero-title {
-    font-size: 32px;
+    font-size: clamp(26px, 7.5vw, 36px);
+    margin-bottom: 12px;
+  }
+  .hero-subtitle {
+    font-size: 17px;
+    margin-bottom: 14px;
+  }
+  .hero-desc {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .hero-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .hero-actions .btn-primary,
+  .hero-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 12px 18px;
+  }
+  .telemetry-strip {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 2px;
+    padding-bottom: 4px;
+  }
+  .telemetry-cell {
+    min-width: 170px;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 14px 16px;
   }
   .grid-section {
-    padding: 48px 20px;
+    padding: 48px 16px;
+  }
+  .section-head {
+    margin-bottom: 32px;
+  }
+  .section-head h2 {
+    font-size: 24px;
+  }
+  .cards-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .benchmark-table th,
+  .benchmark-table td {
+    padding: 12px 14px;
+    font-size: 11px;
+    white-space: nowrap;
   }
   footer {
-    padding: 40px 20px 24px;
+    padding: 40px 16px 24px;
+  }
+  .footer-links {
+    gap: 28px;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-text {
+    font-size: 15px;
+  }
+  .logo-badge {
+    display: none;
+  }
+  .header-actions .btn-primary span {
+    display: none;
+  }
+  .header-actions .btn-primary {
+    padding: 8px 10px;
+  }
+  .hero-content {
+    padding: 18px 16px;
   }
 }

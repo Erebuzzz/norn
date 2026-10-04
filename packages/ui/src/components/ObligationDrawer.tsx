@@ -40,7 +40,7 @@ export const ObligationDrawer: React.FC<ObligationDrawerProps> = ({
         gap: "14px",
         fontFamily: tokens.fontFamily.mono,
         width: "100%",
-        maxWidth: "360px",
+        maxWidth: "min(360px, calc(100vw - 32px))",
         boxShadow: "0 12px 36px rgba(0, 0, 0, 0.75)",
         zIndex: 20,
         ...style,

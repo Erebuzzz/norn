@@ -42,6 +42,8 @@ export class LoomHeroCanvas {
 
     this.handleResize = this.handleResize.bind(this);
     this.handleMouseMove = this.handleMouseMove.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
+    this.handleTouchEnd = this.handleTouchEnd.bind(this);
     this.tick = this.tick.bind(this);
 
     this.init();
@@ -53,6 +55,8 @@ export class LoomHeroCanvas {
 
     window.addEventListener("resize", this.handleResize);
     window.addEventListener("mousemove", this.handleMouseMove);
+    window.addEventListener("touchmove", this.handleTouchMove, { passive: true });
+    window.addEventListener("touchend", this.handleTouchEnd, { passive: true });
     this.start();
   }
 
@@ -64,6 +68,19 @@ export class LoomHeroCanvas {
     const rect = this.canvas.getBoundingClientRect();
     this.mouseX = (e.clientX - rect.left) * this.dpr;
     this.mouseY = (e.clientY - rect.top) * this.dpr;
+  }
+
+  private handleTouchMove(e: TouchEvent): void {
+    if (e.touches.length > 0) {
+      const rect = this.canvas.getBoundingClientRect();
+      this.mouseX = (e.touches[0].clientX - rect.left) * this.dpr;
+      this.mouseY = (e.touches[0].clientY - rect.top) * this.dpr;
+    }
+  }
+
+  private handleTouchEnd(): void {
+    this.mouseX = -1000;
+    this.mouseY = -1000;
   }
 
   public handleResize(): void {
@@ -95,11 +112,16 @@ export class LoomHeroCanvas {
       "SETTLE-GATE",
     ];
 
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
     const count = nodeLabels.length;
-    const centerX = this.width * 0.65;
-    const centerY = this.height * 0.5;
-    const radiusX = Math.min(this.width * 0.28, 380 * this.dpr);
-    const radiusY = Math.min(this.height * 0.38, 240 * this.dpr);
+    const centerX = isMobile ? this.width * 0.5 : this.width * 0.65;
+    const centerY = isMobile ? this.height * 0.35 : this.height * 0.5;
+    const radiusX = isMobile
+      ? Math.min(this.width * 0.38, 160 * this.dpr)
+      : Math.min(this.width * 0.28, 380 * this.dpr);
+    const radiusY = isMobile
+      ? Math.min(this.height * 0.25, 120 * this.dpr)
+      : Math.min(this.height * 0.38, 240 * this.dpr);
 
     // Arrange nodes in an elliptical constellation on the right half of the hero
     for (let i = 0; i < count; i++) {

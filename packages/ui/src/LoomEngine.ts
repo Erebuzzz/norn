@@ -58,6 +58,12 @@ export class LoomEngine {
   private dragStartX: number = 0;
   private dragStartY: number = 0;
   private hasDragged: boolean = false;
+  private touchStartDist: number = 0;
+  private initialPinchZoom: number = 1.0;
+  private isTouchDragging: boolean = false;
+  private touchStartX: number = 0;
+  private touchStartY: number = 0;
+  private hasTouchMoved: boolean = false;
 
   constructor(options: LoomEngineOptions) {
     this.canvas = options.canvas;
@@ -86,11 +92,18 @@ export class LoomEngine {
     this.handleMouseDown = this.handleMouseDown.bind(this);
     this.handleMouseUp = this.handleMouseUp.bind(this);
     this.handleWheel = this.handleWheel.bind(this);
+    this.handleTouchStart = this.handleTouchStart.bind(this);
+    this.handleTouchMove = this.handleTouchMove.bind(this);
+    this.handleTouchEnd = this.handleTouchEnd.bind(this);
 
     this.canvas.addEventListener("mousemove", this.handleMouseMove);
     this.canvas.addEventListener("mousedown", this.handleMouseDown);
     window.addEventListener("mouseup", this.handleMouseUp);
     this.canvas.addEventListener("wheel", this.handleWheel, { passive: false });
+    this.canvas.addEventListener("touchstart", this.handleTouchStart, { passive: false });
+    this.canvas.addEventListener("touchmove", this.handleTouchMove, { passive: false });
+    window.addEventListener("touchend", this.handleTouchEnd);
+    window.addEventListener("touchcancel", this.handleTouchEnd);
   }
 
   private unbindEvents(): void {
@@ -98,6 +111,10 @@ export class LoomEngine {
     this.canvas.removeEventListener("mousedown", this.handleMouseDown);
     window.removeEventListener("mouseup", this.handleMouseUp);
     this.canvas.removeEventListener("wheel", this.handleWheel);
+    this.canvas.removeEventListener("touchstart", this.handleTouchStart);
+    this.canvas.removeEventListener("touchmove", this.handleTouchMove);
+    window.removeEventListener("touchend", this.handleTouchEnd);
+    window.removeEventListener("touchcancel", this.handleTouchEnd);
   }
 
   private screenToWorld(screenX: number, screenY: number): { x: number; y: number } {
@@ -184,6 +201,73 @@ export class LoomEngine {
     const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
     const newZoom = Math.max(0.4, Math.min(3.0, this.zoom * zoomFactor));
     this.zoom = newZoom;
+  }
+
+  private handleTouchStart(e: TouchEvent): void {
+    if (e.touches.length === 1) {
+      this.isTouchDragging = true;
+      this.hasTouchMoved = false;
+      const t = e.touches[0];
+      this.touchStartX = t.clientX - this.panX;
+      this.touchStartY = t.clientY - this.panY;
+    } else if (e.touches.length === 2) {
+      this.isTouchDragging = false;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      this.touchStartDist = Math.hypot(dx, dy);
+      this.initialPinchZoom = this.zoom;
+    }
+  }
+
+  private handleTouchMove(e: TouchEvent): void {
+    if (e.touches.length === 1 && this.isTouchDragging) {
+      const t = e.touches[0];
+      const newPanX = t.clientX - this.touchStartX;
+      const newPanY = t.clientY - this.touchStartY;
+      if (Math.abs(newPanX - this.panX) > 4 || Math.abs(newPanY - this.panY) > 4) {
+        this.hasTouchMoved = true;
+      }
+      this.panX = newPanX;
+      this.panY = newPanY;
+      if (e.cancelable) e.preventDefault();
+    } else if (e.touches.length === 2 && this.touchStartDist > 0) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const factor = dist / this.touchStartDist;
+      this.zoom = Math.max(0.4, Math.min(3.0, this.initialPinchZoom * factor));
+      if (e.cancelable) e.preventDefault();
+    }
+  }
+
+  private handleTouchEnd(e: TouchEvent): void {
+    if (this.isTouchDragging && !this.hasTouchMoved && e.changedTouches.length === 1) {
+      const t = e.changedTouches[0];
+      const worldPos = this.screenToWorld(t.clientX, t.clientY);
+      let clicked: LoomKnot | null = null;
+
+      for (const knot of this.knots) {
+        const dx = worldPos.x - knot.x;
+        const dy = worldPos.y - knot.y;
+        if (Math.sqrt(dx * dx + dy * dy) <= knot.radius + 18) {
+          clicked = knot;
+          break;
+        }
+      }
+
+      this.selectedKnot = clicked;
+      if (clicked) {
+        sound.playNodeSelect();
+      } else {
+        sound.playClick(600);
+      }
+      if (this.onKnotSelect) {
+        this.onKnotSelect(clicked);
+      }
+    }
+
+    this.isTouchDragging = false;
+    this.touchStartDist = 0;
   }
 
   public resetCamera(): void {

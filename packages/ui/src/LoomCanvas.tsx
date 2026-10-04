@@ -141,6 +141,7 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
           height: "100%",
           display: "block",
           cursor: "grab",
+          touchAction: "none",
         }}
       />
 
@@ -168,8 +169,8 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
           onClick={handleZoomIn}
           title="Zoom In"
           style={{
-            width: "26px",
-            height: "26px",
+            width: "28px",
+            height: "28px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -199,8 +200,8 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
           onClick={handleZoomOut}
           title="Zoom Out"
           style={{
-            width: "26px",
-            height: "26px",
+            width: "28px",
+            height: "28px",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -231,7 +232,7 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
           onClick={handleResetCamera}
           title="Reset Camera Position"
           style={{
-            height: "26px",
+            height: "28px",
             padding: "0 8px",
             display: "flex",
             alignItems: "center",
@@ -265,31 +266,34 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
       <div
         style={{
           position: "absolute",
-          bottom: "12px",
-          left: "12px",
+          bottom: "10px",
+          left: "10px",
+          right: "10px",
           display: "flex",
           alignItems: "center",
-          gap: "14px",
+          flexWrap: "wrap",
+          gap: "10px",
           backgroundColor: "rgba(17, 22, 32, 0.90)",
           backdropFilter: "blur(6px)",
           WebkitBackdropFilter: "blur(6px)",
-          padding: "6px 12px",
+          padding: "6px 10px",
           borderRadius: "4px",
           border: `1px solid ${tokens.border}`,
           fontFamily: tokens.fontFamily.mono,
-          fontSize: "10px",
+          fontSize: "9px",
           color: tokens.textMuted,
           zIndex: 5,
           pointerEvents: "none",
+          maxWidth: "fit-content",
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <span style={{ width: "12px", height: "2px", backgroundColor: tokens.active, display: "inline-block" }} />
-          <span style={{ color: tokens.textSecondary }}>Gross Bilateral Debt</span>
+          <span style={{ width: "10px", height: "2px", backgroundColor: tokens.active, display: "inline-block" }} />
+          <span style={{ color: tokens.textSecondary }}>Gross Debt</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <span style={{ width: "12px", height: "2.5px", backgroundColor: tokens.success, display: "inline-block", boxShadow: "0 0 8px #10B981" }} />
-          <span style={{ color: tokens.textPrimary }}>Multilateral Net Path</span>
+          <span style={{ width: "10px", height: "2.5px", backgroundColor: tokens.success, display: "inline-block", boxShadow: "0 0 8px #10B981" }} />
+          <span style={{ color: tokens.textPrimary }}>Net Settlement</span>
         </div>
       </div>
     </div>
