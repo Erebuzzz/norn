@@ -19,6 +19,7 @@ import {
   toggleCounterpartyFreeze,
   toggleObligationSpike,
   resetToBaseline,
+  stepSimulationEpoch,
   type ArenaState,
 } from "./arenaSimulation.js";
 
@@ -58,12 +59,7 @@ export const ArenaApp: React.FC = () => {
 
   const handleStepEpoch = useCallback(() => {
     sound.playClick(1100);
-    setState((prev) => ({
-      ...prev,
-      epoch: prev.epoch + 1,
-      blockHeight: prev.blockHeight + 14,
-      batchMessage: `Epoch #${prev.epoch + 1} stepped. Obligation pool refreshed.`,
-    }));
+    setState((prev) => stepSimulationEpoch(prev));
   }, []);
 
   const handleLiquidityShock = useCallback(() => {
@@ -139,15 +135,12 @@ export const ArenaApp: React.FC = () => {
         if (prev.isShockActive && prev.batchStatus === "REJECTED") {
           return prev;
         }
-        return {
-          ...prev,
-          epoch: prev.epoch + 1,
-          blockHeight: prev.blockHeight + 12,
-        };
+        return stepSimulationEpoch(prev);
       });
+      sound.playNettingSettlement();
     }, 2800);
     return () => clearInterval(interval);
-  }, [state.isRunning, state.isShockActive, state.batchStatus]);
+  }, [state.isRunning]);
 
   // Auto-unweaving scrubber animation loop
   useEffect(() => {
@@ -172,6 +165,34 @@ export const ArenaApp: React.FC = () => {
     const reduction = ((state.grossFlow - state.netFlow) / state.grossFlow) * 100;
     return `${reduction.toFixed(1)}%`;
   }, [state.grossFlow, state.netFlow]);
+
+  const grossHistory = useMemo(() => {
+    const recs = state.auditTrail.slice(0, 8).reverse();
+    if (recs.length < 3) return [12, 14, 13, 16, 18, 17, 21];
+    return recs.map((r) => parseFloat(r.grossAmount.replace(/[^0-9.]/g, "")) / 100000);
+  }, [state.auditTrail]);
+
+  const netHistory = useMemo(() => {
+    const recs = state.auditTrail.slice(0, 8).reverse();
+    if (recs.length < 3) return [8, 7, 5, 4, 3, 2, 1.8];
+    return recs.map((r) => parseFloat(r.netAmount.replace(/[^0-9.]/g, "")) / 100000);
+  }, [state.auditTrail]);
+
+  const compressionHistory = useMemo(() => {
+    const recs = state.auditTrail.slice(0, 8).reverse();
+    if (recs.length < 3) return [40, 55, 68, 79, 88, 91, 91.27];
+    return recs.map((r) => {
+      const g = parseFloat(r.grossAmount.replace(/[^0-9.]/g, ""));
+      const n = parseFloat(r.netAmount.replace(/[^0-9.]/g, ""));
+      return g > 0 ? ((g - n) / g) * 100 : 79.2;
+    });
+  }, [state.auditTrail]);
+
+  const velocityValue = useMemo(() => {
+    if (!state.availableLiquidity) return "8.4x / Epoch";
+    const vel = ((state.grossFlow / state.availableLiquidity) * 2.8).toFixed(1);
+    return `${vel}x / Epoch`;
+  }, [state.grossFlow, state.availableLiquidity]);
 
   return (
     <div
@@ -436,6 +457,55 @@ export const ArenaApp: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Live Protocol Telemetry & Batch Status Feed Bar */}
+      <div
+        role="status"
+        aria-live="polite"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "10px",
+          backgroundColor: state.isShockActive && state.batchStatus === "REJECTED"
+            ? "rgba(215, 102, 79, 0.12)"
+            : "rgba(16, 185, 129, 0.08)",
+          border: `1px solid ${state.isShockActive && state.batchStatus === "REJECTED" ? tokens.danger : "rgba(16, 185, 129, 0.28)"}`,
+          borderRadius: "4px",
+          padding: "8px 14px",
+          fontSize: "11px",
+          fontFamily: tokens.fontFamily.mono,
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", overflow: "hidden", flex: 1, minWidth: "240px" }}>
+          <span
+            style={{
+              width: "8px",
+              height: "8px",
+              borderRadius: "50%",
+              backgroundColor: state.isShockActive && state.batchStatus === "REJECTED"
+                ? tokens.danger
+                : state.isRunning ? tokens.success : tokens.warning,
+              boxShadow: state.isShockActive && state.batchStatus === "REJECTED"
+                ? "0 0 8px #D7664F"
+                : state.isRunning ? "0 0 8px #10B981" : "0 0 8px #F59E0B",
+              flexShrink: 0,
+            }}
+          />
+          <span style={{ color: tokens.textSecondary, fontWeight: 700 }}>
+            {state.batchId}:
+          </span>
+          <span style={{ color: tokens.textPrimary, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {state.batchMessage}
+          </span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "14px", flexShrink: 0, color: tokens.textMuted }}>
+          <span>Solvency: <strong style={{ color: tokens.success }}>100% PASS</strong></span>
+          <span>Haircut: <strong style={{ color: tokens.textPrimary }}>0.0%</strong></span>
+          <span>Feed: <strong style={{ color: state.isRunning ? tokens.success : tokens.textMuted }}>{state.isRunning ? "LIVE [2.8s]" : "PAUSED"}</strong></span>
+        </div>
+      </div>
 
       {/* 2. Main Body Grid */}
       <div
@@ -889,19 +959,19 @@ export const ArenaApp: React.FC = () => {
         <MetricsCard
           title="Gross Flow Volume"
           value={`$${(state.grossFlow / 1_000_000).toFixed(2)}M`}
-          subValue={`${state.rawThreads.length} active obligations`}
-          change="+18.4% 24h"
+          subValue={`${state.grossObligationsCount.toLocaleString()} active obligations`}
+          change={state.isSpikeActive ? "+300% SPIKE" : "+18.4% 24h"}
           trend="up"
-          sparkline={[12, 14, 13, 16, 18, 17, 21]}
+          sparkline={grossHistory}
         />
 
         <MetricsCard
           title="Net Settlement Required"
           value={`$${(state.netFlow / 1_000_000).toFixed(2)}M`}
-          subValue={`${state.netThreads.length} atomic transfers`}
-          change="11.4:1 ratio"
+          subValue={`${state.netTransfersCount} atomic transfers`}
+          change={`${(state.grossFlow / (state.netFlow || 1)).toFixed(1)}:1 ratio`}
           trend="down"
-          sparkline={[8, 7, 5, 4, 3, 2, 1.8]}
+          sparkline={netHistory}
         />
 
         <MetricsCard
@@ -911,16 +981,16 @@ export const ArenaApp: React.FC = () => {
           change="91.27% target"
           trend="up"
           status="active"
-          sparkline={[40, 55, 68, 79, 88, 91, 91.27]}
+          sparkline={compressionHistory}
         />
 
         <MetricsCard
           title="Capital Velocity"
-          value="8.4x / Epoch"
+          value={velocityValue}
           subValue="142ms mean solver latency"
           change="Optimal"
           trend="neutral"
-          sparkline={[6.2, 6.8, 7.4, 7.9, 8.1, 8.4, 8.4]}
+          sparkline={[6.2, 6.8, 7.4, 7.9, 8.1, 8.4, parseFloat(velocityValue) || 8.4]}
         />
       </div>
 

@@ -300,3 +300,106 @@ export function resetToBaseline(state: ArenaState): ArenaState {
     auditTrail: state.auditTrail,
   };
 }
+
+export function stepSimulationEpoch(state: ArenaState): ArenaState {
+  if (state.isShockActive && state.batchStatus === "REJECTED") {
+    return {
+      ...state,
+      epoch: state.epoch + 1,
+      blockHeight: state.blockHeight + 12,
+      batchMessage: `EPOCH #${state.epoch + 1} QUEUED: Clearing halted due to $${state.liquidityShortfall.toLocaleString()} USDG liquidity deficit. Click RECOMPUTE BATCH or RESET BASELINE.`,
+    };
+  }
+
+  const nextEpoch = state.epoch + 1;
+  const nextBlock = state.blockHeight + 12 + (nextEpoch % 5);
+
+  const flowJitter = Math.sin(nextEpoch * 0.72) * 0.12 + Math.cos(nextEpoch * 0.35) * 0.08;
+  const baseGross = state.isSpikeActive ? 10260000 : 3420000;
+  const grossFlow = Math.round(baseGross * (1 + flowJitter));
+
+  const baseCompression = state.isSpikeActive ? 0.924 : 0.792;
+  const compressionJitter = Math.sin(nextEpoch * 0.53) * 0.025;
+  const compressionRatio = Math.max(0.72, Math.min(0.96, baseCompression + compressionJitter));
+  const netFlow = Math.round(grossFlow * (1 - compressionRatio));
+  const grossObligationsCount = Math.round(grossFlow / 266);
+  const netTransfersCount = state.isFreezeActive ? 2 : 3;
+
+  const dAlpha = Math.round(Math.sin(nextEpoch * 0.8) * 35000);
+  const dBeta = Math.round(Math.cos(nextEpoch * 0.6) * 28000);
+  const dGamma = -dAlpha + Math.round(Math.sin(nextEpoch * 0.4) * 15000);
+  const dDelta = -dBeta - Math.round(Math.sin(nextEpoch * 0.4) * 15000);
+
+  const updatedKnots: LoomKnot[] = state.knots.map((knot) => {
+    if (knot.id === "agent-alpha") {
+      const netPos = -180000 + dAlpha;
+      return { ...knot, netPosition: netPos, balance: Math.max(50000, 420000 + dAlpha * 0.4) };
+    }
+    if (knot.id === "agent-beta") {
+      const netPos = 95000 + dBeta;
+      return { ...knot, netPosition: netPos, balance: Math.max(50000, 310000 + dBeta * 0.4) };
+    }
+    if (knot.id === "agent-gamma") {
+      const netPos = 285000 + dGamma;
+      return { ...knot, netPosition: netPos, balance: Math.max(50000, 650000 + dGamma * 0.4) };
+    }
+    if (knot.id === "agent-delta") {
+      const netPos = -200000 + dDelta;
+      return { ...knot, netPosition: netPos, balance: Math.max(50000, 290000 + dDelta * 0.4) };
+    }
+    if (knot.id === "treasury") {
+      return { ...knot, balance: state.availableLiquidity, netPosition: 0 };
+    }
+    return knot;
+  });
+
+  const flowScale = grossFlow / 3420000;
+  const updatedRawThreads = state.rawThreads.map((t) => ({
+    ...t,
+    amount: Math.round(t.amount * (0.92 + (flowScale - 1) * 0.5 + Math.random() * 0.16)),
+  }));
+
+  const updatedNetThreads = state.netThreads.map((t) => ({
+    ...t,
+    amount: Math.round((netFlow / 3) * (0.88 + Math.random() * 0.24)),
+  }));
+
+  const randomHex = () => Math.floor(Math.random() * 16).toString(16);
+  const txHash = "0x" + Array.from({ length: 64 }, randomHex).join("");
+
+  const newAuditRecord: SettlementAuditRecord = {
+    id: `BATCH-${nextEpoch}`,
+    epoch: nextEpoch,
+    timestamp: new Date().toISOString().replace("T", " ").substring(0, 19) + " UTC",
+    from: "Clearing Network",
+    to: `${netTransfersCount} Net Creditors`,
+    grossAmount: `$${grossFlow.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDG`,
+    netAmount: `$${netFlow.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDG`,
+    obligationsCount: grossObligationsCount,
+    liquidityCheck: "PASS",
+    regime: state.regime,
+    txHash,
+    status: "SETTLED",
+    note: `Epoch #${nextEpoch} cleared: ${(compressionRatio * 100).toFixed(1)}% compression on Robinhood Chain`,
+  };
+
+  const nextAudit = [newAuditRecord, ...state.auditTrail.slice(0, 24)];
+
+  return {
+    ...state,
+    epoch: nextEpoch,
+    blockHeight: nextBlock,
+    grossFlow,
+    netFlow,
+    grossObligationsCount,
+    netTransfersCount,
+    requiredLiquidity: netFlow,
+    batchId: `BATCH-${nextEpoch}`,
+    batchStatus: "SETTLED",
+    batchMessage: `Epoch #${nextEpoch} settled: ${grossObligationsCount.toLocaleString()} obligations compressed by ${(compressionRatio * 100).toFixed(1)}% via Robinhood USDG atomic routing.`,
+    knots: updatedKnots,
+    rawThreads: updatedRawThreads,
+    netThreads: updatedNetThreads,
+    auditTrail: nextAudit,
+  };
+}

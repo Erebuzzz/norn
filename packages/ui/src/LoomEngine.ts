@@ -123,9 +123,13 @@ export class LoomEngine {
     const clientY = screenY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
+    const baseCenterX = 415;
+    const baseCenterY = 245;
+    const autoScale = Math.min(1.0, Math.min((rect.width - 60) / 600, (rect.height - 60) / 320));
+    const effectiveZoom = this.zoom * Math.max(0.3, autoScale);
 
-    const worldX = (clientX - centerX - this.panX) / this.zoom + centerX;
-    const worldY = (clientY - centerY - this.panY) / this.zoom + centerY;
+    const worldX = (clientX - (centerX + this.panX)) / effectiveZoom + baseCenterX;
+    const worldY = (clientY - (centerY + this.panY)) / effectiveZoom + baseCenterY;
     return { x: worldX, y: worldY };
   }
 
@@ -363,15 +367,20 @@ export class LoomEngine {
     ctx.fillStyle = tokens.bg;
     ctx.fillRect(0, 0, width, height);
 
-    // World Transformation with Pan & Zoom
+    // World Transformation with Pan, Zoom & Responsive Auto-Centering
     const centerX = width / 2;
     const centerY = height / 2;
+    const baseCenterX = 415;
+    const baseCenterY = 245;
+    const autoScale = Math.min(1.0, Math.min((width - 60) / 600, (height - 60) / 320));
+    const effectiveZoom = this.zoom * Math.max(0.3, autoScale);
+
     ctx.translate(centerX + this.panX, centerY + this.panY);
-    ctx.scale(this.zoom, this.zoom);
-    ctx.translate(-centerX, -centerY);
+    ctx.scale(effectiveZoom, effectiveZoom);
+    ctx.translate(-baseCenterX, -baseCenterY);
 
     // 2.5D Tactical Dot-Matrix Grid
-    this.renderTacticalGrid(width, height);
+    this.renderTacticalGrid();
 
     // Render Threads (Obligation Strands)
     this.renderThreads();
@@ -382,15 +391,15 @@ export class LoomEngine {
     ctx.restore();
   }
 
-  private renderTacticalGrid(width: number, height: number): void {
+  private renderTacticalGrid(): void {
     const { ctx } = this;
     ctx.save();
-    ctx.fillStyle = "rgba(30, 41, 59, 0.4)";
+    ctx.fillStyle = "rgba(45, 60, 85, 0.45)";
     const gridSize = 40;
-    const startX = -gridSize * 4;
-    const endX = width + gridSize * 4;
-    const startY = -gridSize * 4;
-    const endY = height + gridSize * 4;
+    const startX = -600;
+    const endX = 1400;
+    const startY = -400;
+    const endY = 1000;
 
     for (let x = startX; x < endX; x += gridSize) {
       for (let y = startY; y < endY; y += gridSize) {

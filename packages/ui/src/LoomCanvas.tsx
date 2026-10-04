@@ -43,11 +43,15 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
 
     const updateDimensions = () => {
       const rect = container.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
       const dpr = window.devicePixelRatio || 1;
-      canvas.width = Math.max(300, Math.floor(rect.width * dpr));
-      canvas.height = Math.max(200, Math.floor(rect.height * dpr));
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+      const targetWidth = Math.max(300, Math.floor(rect.width * dpr));
+      const targetHeight = Math.max(200, Math.floor(rect.height * dpr));
+      
+      if (canvas.width !== targetWidth || canvas.height !== targetHeight) {
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+      }
     };
 
     updateDimensions();
