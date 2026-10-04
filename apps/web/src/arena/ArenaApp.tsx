@@ -212,6 +212,31 @@ export const ArenaApp: React.FC = () => {
           >
             ← OVERVIEW
           </a>
+          <a
+            href="/docs"
+            style={{
+              padding: "6px 12px",
+              borderRadius: "4px",
+              border: `1px solid ${tokens.border}`,
+              backgroundColor: tokens.bg,
+              color: tokens.success,
+              fontFamily: tokens.fontFamily.mono,
+              fontSize: "11px",
+              fontWeight: 600,
+              textDecoration: "none",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = tokens.success;
+              e.currentTarget.style.backgroundColor = "rgba(16, 185, 129, 0.1)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = tokens.border;
+              e.currentTarget.style.backgroundColor = tokens.bg;
+            }}
+          >
+            DOCS ↗
+          </a>
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <span

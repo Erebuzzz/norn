@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NORN Docs & Gamified Mastery Hub</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%230A0D12' stroke='%2310B981' stroke-width='2'/><path d='M10 16 C10 10, 22 10, 22 16 C22 22, 10 22, 10 16 Z' fill='none' stroke='%2306B6D4' stroke-width='2'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0A0D12;
+      --panel: #0F172A;
+      --card: #151D2F;
+      --border: #1E293B;
+      --border-bright: #334155;
+      --emerald: #10B981;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --cyan: #06B6D4;
+      --cyan-glow: rgba(6, 182, 212, 0.25);
+      --amber: #F59E0B;
+      --crimson: #EF4444;
+      --text: #F8FAFC;
+      --muted: #94A3B8;
+      --faint: #64748B;
+      --font-display: "Space Grotesk", sans-serif;
+      --font-body: "Inter", sans-serif;
+      --font-mono: "JetBrains Mono", monospace;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); line-height: 1.6; overflow-x: hidden; }
+
+    /* Layout */
+    .app-container { display: flex; flex-direction: column; min-height: 100vh; }
+    .header { height: 68px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 100; }
+    .brand-group { display: flex; align-items: center; gap: 14px; text-decoration: none; }
+    .brand-logo { width: 32px; height: 32px; border-radius: 8px; background: #0A0D12; border: 1.5px solid var(--emerald); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--emerald-glow); }
+    .brand-logo svg { width: 20px; height: 20px; }
+    .brand-title { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: #FFF; letter-spacing: -0.02em; }
+    .brand-badge { background: rgba(6, 182, 212, 0.12); color: var(--cyan); border: 1px solid rgba(6, 182, 212, 0.3); font-family: var(--font-mono); font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 600; }
+
+    .header-center { display: flex; align-items: center; gap: 20px; }
+    .xp-meter-box { display: flex; align-items: center; gap: 12px; background: var(--bg); border: 1px solid var(--border); padding: 6px 14px; border-radius: 20px; }
+    .xp-label { font-family: var(--font-mono); font-size: 12px; color: var(--emerald); font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .xp-bar-track { width: 120px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .xp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--emerald)); width: 0%; transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+    .badge-count { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
+
+    .nav-links { display: flex; align-items: center; gap: 16px; }
+    .nav-btn { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--muted); text-decoration: none; padding: 6px 12px; border-radius: 6px; transition: all 0.2s; border: 1px solid transparent; }
+    .nav-btn:hover { color: var(--text); border-color: var(--border-bright); background: rgba(255,255,255,0.03); }
+    .nav-btn.active { color: var(--emerald); border-color: var(--emerald); background: rgba(16, 185, 129, 0.08); }
+    .audio-btn { background: var(--panel); border: 1px solid var(--border); color: var(--cyan); padding: 6px 10px; border-radius: 6px; font-family: var(--font-mono); font-size: 11px; cursor: pointer; transition: all 0.2s; }
+    .audio-btn:hover { border-color: var(--cyan); background: rgba(6, 182, 212, 0.1); }
+
+    /* Main Grid */
+    .docs-layout { display: grid; grid-template-columns: 280px 1fr 280px; flex: 1; max-width: 1720px; margin: 0 auto; width: 100%; }
+
+    /* Sidebar Navigation */
+    .sidebar-left { border-right: 1px solid var(--border); padding: 24px 20px; position: sticky; top: 68px; height: calc(100vh - 68px); overflow-y: auto; background: rgba(10, 13, 18, 0.6); }
+    .search-box { margin-bottom: 20px; position: relative; }
+    .search-input { width: 100%; background: var(--panel); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px 8px 32px; color: var(--text); font-family: var(--font-mono); font-size: 12px; outline: none; transition: border-color 0.2s; }
+    .search-input:focus { border-color: var(--cyan); box-shadow: 0 0 10px var(--cyan-glow); }
+    .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--faint); font-size: 12px; }
+
+    .nav-section-title { font-family: var(--font-mono); font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; margin: 18px 0 8px; font-weight: 700; }
+    .sidebar-link { display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--muted); text-decoration: none; padding: 7px 10px; border-radius: 6px; margin-bottom: 3px; transition: all 0.2s; font-family: var(--font-body); }
+    .sidebar-link:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+    .sidebar-link.active { color: var(--emerald); font-weight: 600; background: rgba(16, 185, 129, 0.08); border-left: 2px solid var(--emerald); }
+    .quest-pill { font-family: var(--font-mono); font-size: 9px; padding: 2px 5px; border-radius: 3px; font-weight: 700; }
+    .quest-pill.open { background: rgba(245, 158, 11, 0.15); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .quest-pill.done { background: rgba(16, 185, 129, 0.15); color: var(--emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+
+    /* Content Area */
+    .docs-content { padding: 40px 48px 100px; max-width: 900px; }
+    .docs-hero { margin-bottom: 40px; padding-bottom: 28px; border-bottom: 1px solid var(--border); }
+    .hero-eyebrow { font-family: var(--font-mono); font-size: 12px; color: var(--cyan); font-weight: 600; margin-bottom: 10px; letter-spacing: 0.05em; }
+    .docs-hero h1 { font-family: var(--font-display); font-size: 40px; font-weight: 700; letter-spacing: -0.02em; color: #FFF; margin-bottom: 14px; line-height: 1.2; }
+    .docs-hero p { font-size: 17px; color: var(--muted); line-height: 1.7; }
+
+    /* Sections */
+    .doc-section { margin-bottom: 56px; scroll-margin-top: 90px; }
+    .doc-section h2 { font-family: var(--font-display); font-size: 26px; font-weight: 700; color: #FFF; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; letter-spacing: -0.01em; }
+    .doc-section h3 { font-family: var(--font-display); font-size: 19px; font-weight: 600; color: var(--text); margin: 24px 0 10px; }
+    .doc-section p { font-size: 15px; color: var(--muted); margin-bottom: 16px; line-height: 1.7; }
+    .doc-section ul { margin: 0 0 20px 20px; color: var(--muted); font-size: 15px; }
+    .doc-section li { margin-bottom: 8px; }
+
+    /* Callouts & Cards */
+    .callout { background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--cyan); border-radius: 8px; padding: 18px 20px; margin: 20px 0; font-size: 14px; color: var(--muted); }
+    .callout.emerald { border-left-color: var(--emerald); background: rgba(16, 185, 129, 0.04); }
+    .callout.amber { border-left-color: var(--amber); background: rgba(245, 158, 11, 0.04); }
+    .callout strong { color: var(--text); }
+
+    /* Code Blocks */
+    .code-box { background: #07090E; border: 1px solid var(--border); border-radius: 8px; padding: 16px 20px; margin: 20px 0; font-family: var(--font-mono); font-size: 13px; color: #E2E8F0; overflow-x: auto; position: relative; }
+    .code-box code { line-height: 1.6; }
+    .code-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--faint); margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 8px; }
+    .copy-btn { background: var(--panel); border: 1px solid var(--border); color: var(--muted); padding: 3px 8px; border-radius: 4px; cursor: pointer; font-size: 10px; font-family: var(--font-mono); }
+    .copy-btn:hover { border-color: var(--cyan); color: var(--text); }
+
+    /* Interactive Gamified Sandboxes */
+    .interactive-card { background: var(--panel); border: 1.5px solid var(--border-bright); border-radius: 12px; padding: 24px; margin: 30px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .interactive-card.quest-active { border-color: var(--emerald); box-shadow: 0 0 20px var(--emerald-glow); }
+    .interactive-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .interactive-title { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: #FFF; display: flex; align-items: center; gap: 8px; }
+    .reward-badge { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald); color: var(--emerald); font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+
+    /* Mini Canvas & Graph Sandboxes */
+    .sandbox-canvas-container { position: relative; width: 100%; height: 260px; background: #07090E; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+    .sandbox-canvas { width: 100%; height: 100%; display: block; }
+    .sandbox-controls { display: flex; gap: 12px; align-items: center; }
+    .action-btn { background: var(--card); border: 1px solid var(--cyan); color: var(--cyan); padding: 8px 16px; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .action-btn:hover { background: rgba(6, 182, 212, 0.15); box-shadow: 0 0 12px var(--cyan-glow); }
+    .action-btn.primary { background: var(--emerald); color: #0A0D12; border-color: var(--emerald); }
+    .action-btn.primary:hover { background: #059669; box-shadow: 0 0 15px var(--emerald-glow); }
+    .action-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: var(--border); color: var(--muted); }
+
+    /* Interactive Sliders & Calculators */
+    .calculator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 18px; }
+    .slider-group { background: #07090E; padding: 14px; border-radius: 8px; border: 1px solid var(--border); }
+    .slider-label { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+    .slider-val { color: var(--emerald); font-weight: 700; }
+    .range-input { width: 100%; accent-color: var(--emerald); cursor: pointer; }
+    .calc-result-box { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+    .calc-res-label { font-family: var(--font-mono); font-size: 11px; color: var(--faint); margin-bottom: 4px; }
+    .calc-res-val { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--text); }
+    .calc-regime-pill { display: inline-block; font-family: var(--font-mono); font-size: 10px; padding: 2px 6px; border-radius: 4px; margin-top: 6px; font-weight: 700; width: fit-content; }
+
+    /* Sidebar Right: Gamification & Badges Showcase */
+    .sidebar-right { border-left: 1px solid var(--border); padding: 24px 20px; position: sticky; top: 68px; height: calc(100vh - 68px); overflow-y: auto; background: rgba(10, 13, 18, 0.6); }
+    .card-title-sm { font-family: var(--font-mono); font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; font-weight: 700; }
+    .badge-card { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; display: flex; align-items: center; gap: 12px; transition: all 0.3s; }
+    .badge-card.unlocked { border-color: var(--emerald); background: rgba(16, 185, 129, 0.05); }
+    .badge-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 1px solid var(--border); }
+    .badge-card.unlocked .badge-icon { border-color: var(--emerald); box-shadow: 0 0 10px var(--emerald-glow); }
+    .badge-info h4 { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .badge-info p { font-size: 11px; color: var(--muted); line-height: 1.3; }
+
+    /* Notification Toast */
+    .toast-overlay { position: fixed; bottom: 30px; right: 30px; z-index: 1000; pointer-events: none; }
+    .toast { background: rgba(15, 23, 42, 0.98); border: 1.5px solid var(--emerald); border-radius: 8px; padding: 14px 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 20px var(--emerald-glow); display: flex; align-items: center; gap: 14px; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: auto; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast-icon { font-size: 24px; }
+    .toast-body h5 { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: #FFF; }
+    .toast-body p { font-size: 12px; color: var(--emerald); font-family: var(--font-mono); }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .docs-layout { grid-template-columns: 240px 1fr; }
+      .sidebar-right { display: none; }
+    }
+    @media (max-width: 800px) {
+      .docs-layout { grid-template-columns: 1fr; }
+      .sidebar-left { display: none; }
+      .docs-content { padding: 24px; }
+      .header-center { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <a href="/" class="brand-group">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 3v18"/>
+            <path d="M3 12h18"/>
+          </svg>
+        </div>
+        <span class="brand-title">NORN</span>
+        <span class="brand-badge">INTERACTIVE DOCS</span>
+      </a>
+
+      <div class="header-center">
+        <div class="xp-meter-box">
+          <div class="xp-label">
+            <span>⚡ LEVEL <span id="userLevel">1</span></span>
+            <span id="xpCount" style="color:var(--text); font-weight:400;">0 / 500 XP</span>
+          </div>
+          <div class="xp-bar-track">
+            <div class="xp-bar-fill" id="xpBarFill"></div>
+          </div>
+          <div class="badge-count" id="badgeSummary">0/4 Badges</div>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="/" class="nav-btn">LOOM</a>
+        <a href="/arena" class="nav-btn">ARENA</a>
+        <a href="/docs" class="nav-btn active">DOCS</a>
+        <button id="audioToggle" class="audio-btn" title="Toggle Sound Effects">SFX: ON</button>
+        <a href="https://github.com/Erebuzzz/norn" target="_blank" rel="noopener" class="nav-btn">GITHUB ↗</a>
+      </nav>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="docs-layout">
+      <!-- Left Sidebar -->
+      <aside class="sidebar-left">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="docsSearch" class="search-input" placeholder="Search documentation..." />
+        </div>
+
+        <div class="nav-section-title">Getting Started</div>
+        <a href="#overview" class="sidebar-link active">1.1 Protocol Overview</a>
+        <a href="#lifecycle" class="sidebar-link">1.2 Obligation Lifecycle</a>
+        <a href="#quickstart" class="sidebar-link">1.3 Quickstart Integration</a>
+
+        <div class="nav-section-title">Interactive Quests</div>
+        <a href="#quest-netting" class="sidebar-link">
+          <span>2.1 Unweave Debt Cycle</span>
+          <span class="quest-pill open" id="pillQuest1">+150 XP</span>
+        </a>
+        <a href="#quest-collateral" class="sidebar-link">
+          <span>2.2 Collateral Haircuts</span>
+          <span class="quest-pill open" id="pillQuest2">+150 XP</span>
+        </a>
+        <a href="#quest-voucher" class="sidebar-link">
+          <span>2.3 Sign EIP-712 Voucher</span>
+          <span class="quest-pill open" id="pillQuest3">+100 XP</span>
+        </a>
+        <a href="#quest-crisis" class="sidebar-link">
+          <span>2.4 Crisis Shock Recovery</span>
+          <span class="quest-pill open" id="pillQuest4">+100 XP</span>
+        </a>
+
+        <div class="nav-section-title">Architecture & Math</div>
+        <a href="#netting-math" class="sidebar-link">3.1 Conservation Invariants</a>
+        <a href="#cycle-algo" class="sidebar-link">3.2 Cycle-Canceling DAG</a>
+        <a href="#risk-regimes" class="sidebar-link">3.3 Solvency Regimes</a>
+
+        <div class="nav-section-title">Settlement Rails</div>
+        <a href="#stylus" class="sidebar-link">4.1 Arbitrum Stylus (Rust)</a>
+        <a href="#robinhood" class="sidebar-link">4.2 Robinhood Chain RWAs</a>
+        <a href="#usdg" class="sidebar-link">4.3 Paxos USDG Standards</a>
+
+        <div class="nav-section-title">Reference</div>
+        <a href="#contracts" class="sidebar-link">5.1 Smart Contract Directory</a>
+        <a href="#faq" class="sidebar-link">5.2 Technical FAQ</a>
+      </aside>
+
+      <!-- Center Documentation Content -->
+      <main class="docs-content">
+        <div class="docs-hero">
+          <div class="hero-eyebrow">PROTOCOL DOCUMENTATION & MASTERY GUIDE</div>
+          <h1>NORN: Multilateral Clearing for Machine Payments</h1>
+          <p>
+            Welcome to the interactive NORN protocol documentation. NORN decouples high-frequency machine payment obligations from on-chain execution by continuously identifying and collapsing cyclic debts off-chain, settling minimal residual balances with sub-second finality on Arbitrum Stylus and Robinhood Chain.
+          </p>
+        </div>
+
+        <!-- 1.1 Overview -->
+        <section id="overview" class="doc-section">
+          <h2>1.1 Protocol Overview & The Loom</h2>
+          <p>
+            In an autonomous machine economy, AI agents continuously consume micro-services: data feeds, GPU inference, storage, and specialized computation. Under traditional gross settlement, settling each micro-transaction directly on a blockchain requires 100% upfront collateral float, generates massive gas overhead, and causes systemic circular deadlocks.
+          </p>
+          <div class="callout emerald">
+            <strong>The Core Invariant:</strong> NORN aggregates cryptographically signed commitments into a directed obligation graph. By executing multilateral cycle-canceling algorithms, circular obligations vanish mathematically before touching the blockchain, conserving up to 92.4% in required capital float.
+          </div>
+          <p>
+            The protocol operates through four distinct phases:
+          </p>
+          <ul>
+            <li><strong>Obligation Creation:</strong> Payer agents sign structured EIP-712 payment commitments off-chain.</li>
+            <li><strong>Graph Clearing:</strong> The NORN Loom continuously builds and validates the multi-agent obligation graph.</li>
+            <li><strong>Cycle Netting:</strong> Deterministic algorithms locate cyclic debt loops and subtract bottleneck values.</li>
+            <li><strong>Dual-Chain Settlement:</strong> Only net residual delta balances are settled via Arbitrum Stylus and Robinhood Chain.</li>
+          </ul>
+        </section>
+
+        <!-- 2.1 Quest 1: Unweave Debt Cycle -->
+        <section id="quest-netting" class="doc-section">
+          <h2>2.1 Quest 1: Unweave a Debt Cycle</h2>
+          <p>
+            Experience how the NORN Loom dissolves circular machine debts. Below is a 3-party obligation loop: Agent Alpha owes Beta $450k, Beta owes Gamma $420k, and Gamma owes Alpha $370k.
+          </p>
+
+          <div class="interactive-card" id="cardQuest1">
+            <div class="interactive-header">
+              <div class="interactive-title">
+                <span>Interactive Netting Sandbox</span>
+              </div>
+              <div class="reward-badge">+150 XP REWARD</div>
+            </div>
+
+            <div class="sandbox-canvas-container">
+              <canvas id="questCanvas" class="sandbox-canvas" width="800" height="260"></canvas>
+            </div>
+
+            <div class="sandbox-controls">
+              <button id="btnDetectCycle" class="action-btn">Step 1: Detect Cycle</button>
+              <button id="btnUnweaveCycle" class="action-btn primary" disabled>Step 2: Collapse Redundant Debt</button>
+              <button id="btnResetCycle" class="action-btn" style="margin-left:auto;">Reset Sandbox</button>
+            </div>
+
+            <div style="margin-top:16px; display:flex; gap:20px; font-family:var(--font-mono); font-size:12px;">
+              <div>Gross Volume: <span id="txtGrossVol" style="color:#FFF; font-weight:700;">$1,240,000</span></div>
+              <div>Net Settlement: <span id="txtNetVol" style="color:var(--emerald); font-weight:700;">$1,240,000</span></div>
+              <div>Liquidity Conserved: <span id="txtConserved" style="color:var(--cyan); font-weight:700;">0.0%</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2.2 Quest 2: Collateral & Haircuts -->
+        <section id="quest-collateral" class="doc-section">
+          <h2>2.2 Quest 2: Collateral Haircuts & Solvency</h2>
+          <p>
+            On Robinhood Chain (Chain ID 46630), participants deposit Paxos USDG alongside tokenized Stock Tokens (AAPL, NVDA, HOOD) to back their credit lines. Test how the Section 18 collateral valuation formula applies risk haircuts.
+          </p>
+
+          <div class="interactive-card" id="cardQuest2">
+            <div class="interactive-header">
+              <div class="interactive-title">
+                <span>Collateral Valuation & Haircut Calculator</span>
+              </div>
+              <div class="reward-badge">+150 XP REWARD</div>
+            </div>
+
+            <div class="calculator-grid">
+              <div class="slider-group">
+                <div class="slider-label">
+                  <span>Paxos USDG Deposit</span>
+                  <span id="lblUsdg" class="slider-val">$50,000</span>
+                </div>
+                <input type="range" id="rngUsdg" class="range-input" min="10000" max="200000" step="5000" value="50000" />
+
+                <div class="slider-label" style="margin-top:14px;">
+                  <span>Stock Tokens (AAPL / NVDA)</span>
+                  <span id="lblStocks" class="slider-val">$100,000</span>
+                </div>
+                <input type="range" id="rngStocks" class="range-input" min="0" max="300000" step="10000" value="100000" />
+
+                <div class="slider-label" style="margin-top:14px;">
+                  <span>Market Volatility</span>
+                  <span id="lblVol" class="slider-val">Normal (20% Haircut)</span>
+                </div>
+                <input type="range" id="rngVol" class="range-input" min="0" max="2" step="1" value="0" />
+              </div>
+
+              <div class="calc-result-box">
+                <div class="calc-res-label">BORROWING CAPACITY (COLLATERAL POWER)</div>
+                <div class="calc-res-val" id="resPower" style="color:var(--emerald);">$130,000</div>
+                <div style="font-size:12px; color:var(--muted); margin-top:8px;">
+                  USDG: $50,000 (100% Value)<br/>
+                  Stocks: $80,000 (20% Haircut Applied)
+                </div>
+                <div id="pillRegime" class="calc-regime-pill" style="background:rgba(16,185,129,0.15); color:var(--emerald); border:1px solid var(--emerald);">
+                  REGIME: NORMAL (RESERVE RATIO 162.5%)
+                </div>
+              </div>
+            </div>
+
+            <div class="sandbox-controls">
+              <button id="btnClaimHaircutXP" class="action-btn primary">Complete Collateral Check (+150 XP)</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2.3 Quest 3: EIP-712 Voucher -->
+        <section id="quest-voucher" class="doc-section">
+          <h2>2.3 Quest 3: Sign an EIP-712 Payment Voucher</h2>
+          <p>
+            Autonomous machine payments rely on typed structured data signatures. Rather than broad token allowances, agents issue cryptographically bound vouchers that expire if not cleared within the designated epoch.
+          </p>
+
+          <div class="interactive-card" id="cardQuest3">
+            <div class="interactive-header">
+              <div class="interactive-title">
+                <span>EIP-712 Voucher Builder & Inspector</span>
+              </div>
+              <div class="reward-badge">+100 XP REWARD</div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+              <div>
+                <label style="font-family:var(--font-mono); font-size:11px; color:var(--muted);">PAYER AGENT ADDRESS</label>
+                <input type="text" id="inpPayer" style="width:100%; background:#07090E; border:1px solid var(--border); padding:8px 10px; border-radius:6px; color:#FFF; font-family:var(--font-mono); font-size:12px; margin-top:4px;" value="0x4a12bE6A196144e59C2411985331Cee7e89b" />
+              </div>
+              <div>
+                <label style="font-family:var(--font-mono); font-size:11px; color:var(--muted);">PAYEE RECIPIENT ADDRESS</label>
+                <input type="text" id="inpPayee" style="width:100%; background:#07090E; border:1px solid var(--border); padding:8px 10px; border-radius:6px; color:#FFF; font-family:var(--font-mono); font-size:12px; margin-top:4px;" value="0x8f31Cc3C279e89d58A9a23945903bCc7eCc" />
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+              <div>
+                <label style="font-family:var(--font-mono); font-size:11px; color:var(--muted);">AMOUNT (USDC / USDG)</label>
+                <input type="text" id="inpAmount" style="width:100%; background:#07090E; border:1px solid var(--border); padding:8px 10px; border-radius:6px; color:#FFF; font-family:var(--font-mono); font-size:12px; margin-top:4px;" value="50000.00" />
+              </div>
+              <div>
+                <label style="font-family:var(--font-mono); font-size:11px; color:var(--muted);">SERVICE REFERENCE</label>
+                <input type="text" id="inpRef" style="width:100%; background:#07090E; border:1px solid var(--border); padding:8px 10px; border-radius:6px; color:#FFF; font-family:var(--font-mono); font-size:12px; margin-top:4px;" value="DeepSeek Inference API Batch #409" />
+              </div>
+            </div>
+
+            <div class="code-box" style="margin-top:10px;">
+              <div class="code-header">
+                <span>EIP-712 STRUCTURED TYPED COMMITMENT</span>
+                <span id="txtSigStatus" style="color:var(--emerald);">✓ READY TO SIGN</span>
+              </div>
+              <pre><code id="txtVoucherJson">{
+  "types": { "Obligation": [
+    { "name": "payer", "type": "address" },
+    { "name": "payee", "type": "address" },
+    { "name": "amount", "type": "uint256" },
+    { "name": "nonce", "type": "uint256" },
+    { "name": "expiresAt", "type": "uint256" },
+    { "name": "reference", "type": "string" }
+  ]},
+  "primaryType": "Obligation",
+  "domain": { "name": "NORN Obligation Protocol", "version": "2.0.0", "chainId": 46630 }
+}</code></pre>
+            </div>
+
+            <div class="sandbox-controls">
+              <button id="btnSignVoucher" class="action-btn primary">Generate & Sign Voucher (+100 XP)</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2.4 Quest 4: Crisis Shock -->
+        <section id="quest-crisis" class="doc-section">
+          <h2>2.4 Quest 4: Crisis Shock Recovery</h2>
+          <p>
+            When financial contagion hits, traditional clearing houses suffer cascade defaults. In NORN, if a 40% systemic liquidity shock occurs, the protocol automatically downgrades regimes and recalculates a pruned recovery netting plan to protect solvency.
+          </p>
+
+          <div class="interactive-card" id="cardQuest4">
+            <div class="interactive-header">
+              <div class="interactive-title">
+                <span>Genesis Crisis Simulator Module</span>
+              </div>
+              <div class="reward-badge">+100 XP REWARD</div>
+            </div>
+
+            <div style="background:#07090E; border:1px solid var(--border); border-radius:8px; padding:18px; margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-family:var(--font-mono); font-size:12px;">
+                <span>System Liquidity Pool: <strong style="color:#FFF;">$1,000,000</strong></span>
+                <span id="lblShockStatus" style="color:var(--emerald); font-weight:700;">STATUS: EQUILIBRIUM</span>
+              </div>
+              <div style="height:10px; background:var(--border); border-radius:5px; overflow:hidden;">
+                <div id="barPoolHealth" style="height:100%; background:var(--emerald); width:100%; transition:all 0.5s;"></div>
+              </div>
+            </div>
+
+            <div class="sandbox-controls">
+              <button id="btnInjectShock" class="action-btn" style="border-color:var(--amber); color:var(--amber);">Inject -40% Liquidity Shock</button>
+              <button id="btnResolveShock" class="action-btn primary" disabled>Autonomous Recovery Netting (+100 XP)</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3.1 Conservation Invariant -->
+        <section id="netting-math" class="doc-section">
+          <h2>3.1 Mathematical Foundations of Netting</h2>
+          <p>
+            For any clearing epoch with N participants, each bilateral obligation is denoted as O(i -> j). The gross obligation volume is the simple sum of all bilateral commitments:
+          </p>
+          <div class="code-box">
+            <code>Gross Volume: G = Sum_{i, j} O_{i -> j}</code>
+          </div>
+          <p>
+            Each participant's true economic balance sheet exposure is defined by their net settlement position:
+          </p>
+          <div class="code-box">
+            <code>Net Position: Net_i = Sum_{j} O_{j -> i} - Sum_{j} O_{i -> j}</code>
+          </div>
+          <div class="callout emerald">
+            <strong>The Global Zero-Sum Conservation Invariant:</strong>
+            <code>Sum_{i=1}^{N} Net_i == 0</code><br/>
+            Because total credits identically equal total debits across the network, the protocol introduces zero synthetic credit or unbacked float.
+          </div>
+        </section>
+
+        <!-- 4.1 Arbitrum Stylus & Robinhood Chain -->
+        <section id="stylus" class="doc-section">
+          <h2>4.1 Arbitrum Stylus & Robinhood Chain Rails</h2>
+          <p>
+            NORN is engineered for cross-chain capital optimization:
+          </p>
+          <ul>
+            <li><strong>Arbitrum Stylus:</strong> Compiles Rust smart contracts directly into WebAssembly (WASM). High-density fixed-point WAD arithmetic (`1e18`) and Merkle tree validation execute at native speeds with over 90% gas savings.</li>
+            <li><strong>Robinhood Chain (46630):</strong> Connects directly to institutional fintech liquidity and Stock Tokens, allowing agents to pledge tokenized equities (AAPL, NVDA) as collateral.</li>
+            <li><strong>Paxos USDG:</strong> Standardized regulated dollar stablecoin utilized as the primary settlement asset.</li>
+          </ul>
+        </section>
+
+        <!-- 5.1 Smart Contract Directory -->
+        <section id="contracts" class="doc-section">
+          <h2>5.1 Smart Contract Directory</h2>
+          <p>
+            All production smart contracts are open-source and verified on Robinhood Chain testnet (Chain ID 46630):
+          </p>
+          <div class="code-box">
+            <div class="code-header">
+              <span>ROBINHOOD CHAIN DEPLOYED CONTRACTS</span>
+              <button class="copy-btn" onclick="navigator.clipboard.writeText('0x5555555555555555555555555555555555550005')">Copy</button>
+            </div>
+            <code>SettlementController: 0x5555555555555555555555555555555555550005
+ClearingHouse:        0x3333333333333333333333333333333333330003
+LiquidityManager:     0x4444444444444444444444444444444444440004
+ObligationRegistry:   0x2222222222222222222222222222222222220002
+ParticipantRegistry:  0x1111111111111111111111111111111111110001
+Paxos USDG (Primary): 0x8888888888888888888888888888888888880008</code>
+          </div>
+        </section>
+
+        <!-- 5.2 FAQ -->
+        <section id="faq" class="doc-section">
+          <h2>5.2 Technical FAQ</h2>
+          <h3>What happens if a debtor agent defaults during settlement?</h3>
+          <p>
+            Before an epoch clears, each participant's debit is verified against their pledged liquidity and approved credit line. If a shortfall occurs, the netting engine prunes deferred-priority obligations and executes emergency recovery netting, ensuring solvent counterparties settle without delay.
+          </p>
+          <h3>Can any ERC-20 token be netted?</h3>
+          <p>
+            NORN is asset-agnostic. Epoch batches group obligations by canonical asset address. Primary settlement runs on Paxos USDG, with secondary multi-currency support for USDC and Stock Tokens.
+          </p>
+        </section>
+      </main>
+
+      <!-- Right Sidebar: Badges & Mastery Showcase -->
+      <aside class="sidebar-right">
+        <div class="card-title-sm">PROTOCOL MASTERY BADGES</div>
+
+        <div class="badge-card" id="badgeWeaver">
+          <div class="badge-icon">🌟</div>
+          <div class="badge-info">
+            <h4>Loom Weaver</h4>
+            <p>Unweave and collapse a circular debt cycle.</p>
+          </div>
+        </div>
+
+        <div class="badge-card" id="badgeRisk">
+          <div class="badge-icon">🛡️</div>
+          <div class="badge-info">
+            <h4>Risk Architect</h4>
+            <p>Configure collateral haircuts and verify reserve bounds.</p>
+          </div>
+        </div>
+
+        <div class="badge-card" id="badgeVoucher">
+          <div class="badge-icon">✍️</div>
+          <div class="badge-info">
+            <h4>Voucher Signer</h4>
+            <p>Generate and inspect an EIP-712 structured payment voucher.</p>
+          </div>
+        </div>
+
+        <div class="badge-card" id="badgeStylus">
+          <div class="badge-icon">⚡</div>
+          <div class="badge-info">
+            <h4>Solvency Guardian</h4>
+            <p>Restore protocol equilibrium under a 40% crisis shock.</p>
+          </div>
+        </div>
+
+        <div style="background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:14px; margin-top:20px;">
+          <div style="font-family:var(--font-mono); font-size:11px; color:var(--cyan); font-weight:700; margin-bottom:6px;">PRODUCTION STATUS</div>
+          <div style="font-size:12px; color:var(--muted); line-height:1.5;">
+            Deployed on Vercel Edge<br/>
+            Arbitrum Stylus: Active<br/>
+            Robinhood Chain: 46630<br/>
+            116 Passing Tests
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast-overlay">
+      <div id="toast" class="toast">
+        <div class="toast-icon" id="toastIcon">🏆</div>
+        <div class="toast-body">
+          <h5 id="toastTitle">Quest Complete!</h5>
+          <p id="toastDesc">+150 XP Earned</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    // State management for gamification
+    let state = {
+      xp: 0,
+      soundEnabled: true,
+      quests: {
+        quest1: false,
+        quest2: false,
+        quest3: false,
+        quest4: false
+      }
+    };
+
+    // Load saved state from localStorage
+    try {
+      const saved = localStorage.getItem('norn_docs_gamification');
+      if (saved) {
+        state = { ...state, ...JSON.parse(saved) };
+      }
+    } catch(e) {}
+
+    // Web Audio API Synthesizer
+    let audioCtx = null;
+    function getAudio() {
+      if (!audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      return audioCtx;
+    }
+
+    function playSound(type) {
+      if (!state.soundEnabled) return;
+      const ctx = getAudio();
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      if (type === 'click') {
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(800, ctx.currentTime);
+        o.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.04);
+        g.gain.setValueAtTime(0.08, ctx.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+        o.connect(g);
+        g.connect(ctx.destination);
+        o.start();
+        o.stop(ctx.currentTime + 0.04);
+      } else if (type === 'achievement') {
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+          const o = ctx.createOscillator();
+          const g = ctx.createGain();
+          o.type = 'sine';
+          o.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+          g.gain.setValueAtTime(0.12, ctx.currentTime + idx * 0.08);
+          g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
+          o.connect(g);
+          g.connect(ctx.destination);
+          o.start(ctx.currentTime + idx * 0.08);
+          o.stop(ctx.currentTime + 1.2);
+        });
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('norn_docs_gamification', JSON.stringify(state));
+      } catch(e) {}
+      updateUi();
+    }
+
+    function addXp(amount, questKey, badgeId, badgeName) {
+      if (state.quests[questKey]) return;
+      state.quests[questKey] = true;
+      state.xp += amount;
+      saveState();
+      playSound('achievement');
+      showToast('🏆 Quest Complete!', `+${amount} XP! Unlocked badge: ${badgeName}`, '🌟');
+    }
+
+    function showToast(title, desc, icon = '🏆') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastDesc').textContent = desc;
+      document.getElementById('toastIcon').textContent = icon;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    function updateUi() {
+      const xp = state.xp;
+      const level = Math.floor(xp / 150) + 1;
+      document.getElementById('userLevel').textContent = level;
+      document.getElementById('xpCount').textContent = `${xp} / 500 XP`;
+      const fillPct = Math.min(100, (xp / 500) * 100);
+      document.getElementById('xpBarFill').style.width = `${fillPct}%`;
+
+      const completedCount = Object.values(state.quests).filter(Boolean).length;
+      document.getElementById('badgeSummary').textContent = `${completedCount}/4 Badges`;
+
+      // Update badge states
+      const setBadge = (id, pillId, unlocked) => {
+        const el = document.getElementById(id);
+        const pill = document.getElementById(pillId);
+        if (el) el.classList.toggle('unlocked', unlocked);
+        if (pill) {
+          pill.className = unlocked ? 'quest-pill done' : 'quest-pill open';
+          pill.textContent = unlocked ? 'COMPLETED' : pill.textContent;
+        }
+      };
+
+      setBadge('badgeWeaver', 'pillQuest1', state.quests.quest1);
+      setBadge('badgeRisk', 'pillQuest2', state.quests.quest2);
+      setBadge('badgeVoucher', 'pillQuest3', state.quests.quest3);
+      setBadge('badgeStylus', 'pillQuest4', state.quests.quest4);
+    }
+
+    // Audio button toggle
+    const audioBtn = document.getElementById('audioToggle');
+    audioBtn.addEventListener('click', () => {
+      state.soundEnabled = !state.soundEnabled;
+      audioBtn.textContent = state.soundEnabled ? 'SFX: ON' : 'SFX: OFF';
+      playSound('click');
+    });
+
+    // -------------------------------------------------------------
+    // Quest 1: Canvas Cycle Unweaver
+    // -------------------------------------------------------------
+    const canvas = document.getElementById('questCanvas');
+    const ctx = canvas.getContext('2d');
+    let cycleDetected = false;
+    let cycleNetted = false;
+
+    function renderQuestCanvas() {
+      ctx.fillStyle = '#07090E';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const a = { x: 200, y: 190, name: 'ALPHA' };
+      const b = { x: 400, y: 70,  name: 'BETA' };
+      const c = { x: 600, y: 190, name: 'GAMMA' };
+
+      const drawArrow = (from, to, text, isBottleneck, isDissolved) => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+
+        if (isDissolved) {
+          ctx.strokeStyle = 'rgba(16, 185, 129, 0.2)';
+          ctx.lineWidth = 1;
+          ctx.setLineDash([4, 4]);
+        } else if (cycleDetected) {
+          ctx.strokeStyle = isBottleneck ? '#F59E0B' : '#06B6D4';
+          ctx.lineWidth = isBottleneck ? 3 : 2;
+          ctx.setLineDash([6, 4]);
+        } else {
+          ctx.strokeStyle = '#EF4444';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([4, 4]);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        const midX = (from.x + to.x) / 2;
+        const midY = (from.y + to.y) / 2;
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.9)';
+        ctx.fillRect(midX - 35, midY - 10, 70, 20);
+        ctx.fillStyle = isDissolved ? '#64748B' : isBottleneck ? '#F59E0B' : '#F8FAFC';
+        ctx.font = '10px monospace';
+        ctx.fillText(text, midX - 28, midY + 4);
+      };
+
+      // Draw Edges
+      drawArrow(a, b, cycleNetted ? '$80k' : '$450k', false, false);
+      drawArrow(b, c, cycleNetted ? '$50k' : '$420k', false, false);
+      drawArrow(c, a, cycleNetted ? '$0 (PRUNED)' : '$370k', true, cycleNetted);
+
+      // Draw Nodes
+      [a, b, c].forEach(n => {
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 22, 0, Math.PI * 2);
+        ctx.fillStyle = '#0F172A';
+        ctx.fill();
+        ctx.strokeStyle = cycleNetted ? '#10B981' : '#06B6D4';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        ctx.fillStyle = '#FFF';
+        ctx.font = 'bold 11px monospace';
+        ctx.fillText(n.name, n.x - 18, n.y + 4);
+      });
+    }
+
+    renderQuestCanvas();
+
+    document.getElementById('btnDetectCycle').addEventListener('click', () => {
+      playSound('click');
+      cycleDetected = true;
+      document.getElementById('btnUnweaveCycle').disabled = false;
+      renderQuestCanvas();
+    });
+
+    document.getElementById('btnUnweaveCycle').addEventListener('click', () => {
+      cycleNetted = true;
+      renderQuestCanvas();
+      document.getElementById('txtGrossVol').textContent = '$1,240,000';
+      document.getElementById('txtNetVol').textContent = '$94,200';
+      document.getElementById('txtConserved').textContent = '92.4%';
+      addXp(150, 'quest1', 'badgeWeaver', 'Loom Weaver');
+    });
+
+    document.getElementById('btnResetCycle').addEventListener('click', () => {
+      playSound('click');
+      cycleDetected = false;
+      cycleNetted = false;
+      document.getElementById('btnUnweaveCycle').disabled = true;
+      document.getElementById('txtGrossVol').textContent = '$1,240,000';
+      document.getElementById('txtNetVol').textContent = '$1,240,000';
+      document.getElementById('txtConserved').textContent = '0.0%';
+      renderQuestCanvas();
+    });
+
+    // -------------------------------------------------------------
+    // Quest 2: Collateral & Haircuts Calculator
+    // -------------------------------------------------------------
+    const rngUsdg = document.getElementById('rngUsdg');
+    const rngStocks = document.getElementById('rngStocks');
+    const rngVol = document.getElementById('rngVol');
+
+    function updateCalc() {
+      const usdg = parseInt(rngUsdg.value, 10);
+      const stocks = parseInt(rngStocks.value, 10);
+      const volIdx = parseInt(rngVol.value, 10);
+
+      const haircutPct = volIdx === 0 ? 0.20 : volIdx === 1 ? 0.35 : 0.50;
+      const volLabel = volIdx === 0 ? 'Normal (20% Haircut)' : volIdx === 1 ? 'High (35% Haircut)' : 'Extreme (50% Haircut)';
+
+      document.getElementById('lblUsdg').textContent = `$${usdg.toLocaleString()}`;
+      document.getElementById('lblStocks').textContent = `$${stocks.toLocaleString()}`;
+      document.getElementById('lblVol').textContent = volLabel;
+
+      const stockPower = stocks * (1 - haircutPct);
+      const totalPower = usdg + stockPower;
+      document.getElementById('resPower').textContent = `$${Math.round(totalPower).toLocaleString()}`;
+
+      const reserveRatio = ((totalPower / 80000) * 100).toFixed(1);
+      const pill = document.getElementById('pillRegime');
+      if (reserveRatio >= 150) {
+        pill.style.background = 'rgba(16,185,129,0.15)';
+        pill.style.color = '#10B981';
+        pill.style.borderColor = '#10B981';
+        pill.textContent = `REGIME: NORMAL (RESERVE RATIO ${reserveRatio}%)`;
+      } else if (reserveRatio >= 120) {
+        pill.style.background = 'rgba(6,182,212,0.15)';
+        pill.style.color = '#06B6D4';
+        pill.style.borderColor = '#06B6D4';
+        pill.textContent = `REGIME: CONSTRAINED (RESERVE RATIO ${reserveRatio}%)`;
+      } else {
+        pill.style.background = 'rgba(245,158,11,0.15)';
+        pill.style.color = '#F59E0B';
+        pill.style.borderColor = '#F59E0B';
+        pill.textContent = `REGIME: DEFENSIVE (RESERVE RATIO ${reserveRatio}%)`;
+      }
+    }
+
+    [rngUsdg, rngStocks, rngVol].forEach(el => el.addEventListener('input', updateCalc));
+    document.getElementById('btnClaimHaircutXP').addEventListener('click', () => {
+      addXp(150, 'quest2', 'badgeRisk', 'Risk Architect');
+    });
+
+    // -------------------------------------------------------------
+    // Quest 3: EIP-712 Voucher Signer
+    // -------------------------------------------------------------
+    document.getElementById('btnSignVoucher').addEventListener('click', () => {
+      const payer = document.getElementById('inpPayer').value;
+      const payee = document.getElementById('inpPayee').value;
+      const amount = document.getElementById('inpAmount').value;
+      const ref = document.getElementById('inpRef').value;
+
+      document.getElementById('txtSigStatus').textContent = '✓ SIGNED & VALIDATED';
+      document.getElementById('txtVoucherJson').textContent = JSON.stringify({
+        primaryType: 'Obligation',
+        domain: { name: 'NORN Obligation Protocol', version: '2.0.0', chainId: 46630 },
+        message: {
+          payer: payer,
+          payee: payee,
+          amount: amount,
+          nonce: 1042,
+          expiresAt: Math.floor(Date.now()/1000) + 3600,
+          reference: ref
+        },
+        signature: '0x8f2d...93a1e'
+      }, null, 2);
+
+      addXp(100, 'quest3', 'badgeVoucher', 'Voucher Signer');
+    });
+
+    // -------------------------------------------------------------
+    // Quest 4: Crisis Shock Simulator
+    // -------------------------------------------------------------
+    const btnInjectShock = document.getElementById('btnInjectShock');
+    const btnResolveShock = document.getElementById('btnResolveShock');
+    const barPool = document.getElementById('barPoolHealth');
+    const lblShock = document.getElementById('lblShockStatus');
+
+    btnInjectShock.addEventListener('click', () => {
+      playSound('click');
+      barPool.style.width = '60%';
+      barPool.style.background = '#F59E0B';
+      lblShock.textContent = 'WARNING: -40% LIQUIDITY SHOCK ACTIVE';
+      lblShock.style.color = '#F59E0B';
+      btnResolveShock.disabled = false;
+    });
+
+    btnResolveShock.addEventListener('click', () => {
+      barPool.style.width = '92%';
+      barPool.style.background = '#10B981';
+      lblShock.textContent = 'SOLVENT: RECOVERY NETTING COMPLETED';
+      lblShock.style.color = '#10B981';
+      addXp(100, 'quest4', 'badgeStylus', 'Solvency Guardian');
+    });
+
+    // Sidebar search filter
+    document.getElementById('docsSearch').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('.sidebar-link').forEach(link => {
+        const text = link.textContent.toLowerCase();
+        link.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+    });
+
+    // Initial render
+    updateUi();
+  </script>
+</body>
+</html>

@@ -19,6 +19,7 @@ export default defineConfig({
       input: {
         main: resolve(rootDir, "index.html"),
         arena: resolve(rootDir, "arena/index.html"),
+        docs: resolve(rootDir, "docs/index.html"),
         notFound: resolve(rootDir, "404.html"),
       },
     },
