@@ -503,6 +503,7 @@ export const ArenaApp: React.FC = () => {
               netThreads={state.netThreads}
               unweaveProgress={unweaveSlider}
               onKnotSelect={setSelectedKnot}
+              selectedKnot={selectedKnot}
               height={520}
             />
 
@@ -516,6 +517,60 @@ export const ArenaApp: React.FC = () => {
                 />
               </div>
             )}
+          </div>
+
+          {/* Quick Participant Node Inspector Bar */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flexWrap: "wrap",
+              backgroundColor: tokens.surface,
+              border: `1px solid ${tokens.border}`,
+              borderRadius: "4px",
+              padding: "8px 14px",
+              fontSize: "11px",
+              fontFamily: tokens.fontFamily.mono,
+            }}
+          >
+            <span style={{ color: tokens.textMuted, fontWeight: 600 }}>PARTICIPANT NODES:</span>
+            {state.knots.map((knot) => {
+              const isSelected = selectedKnot?.id === knot.id;
+              let dotColor = tokens.success;
+              if (knot.status === "stressed") dotColor = tokens.danger;
+              else if (knot.status === "constrained") dotColor = tokens.warning;
+              else if (knot.status === "frozen") dotColor = "#64748B";
+
+              return (
+                <button
+                  key={knot.id}
+                  type="button"
+                  onClick={() => {
+                    setSelectedKnot(isSelected ? null : knot);
+                    sound.playNodeSelect();
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                    backgroundColor: isSelected ? "rgba(6, 182, 212, 0.18)" : tokens.panel,
+                    border: `1px solid ${isSelected ? tokens.active : tokens.borderSubtle}`,
+                    color: isSelected ? tokens.active : tokens.textPrimary,
+                    padding: "4px 10px",
+                    borderRadius: "3px",
+                    cursor: "pointer",
+                    fontSize: "11px",
+                    fontFamily: tokens.fontFamily.mono,
+                    fontWeight: isSelected ? 700 : 500,
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: dotColor }} />
+                  <span>{knot.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Interactive Unweaving Timeline Scrubber */}

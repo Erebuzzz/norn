@@ -29,7 +29,9 @@ export const ObligationDrawer: React.FC<ObligationDrawerProps> = ({
       role="complementary"
       aria-label={`Counterparty Details for ${knot.label}`}
       style={{
-        backgroundColor: tokens.surface,
+        backgroundColor: "rgba(17, 22, 32, 0.96)",
+        backdropFilter: "blur(8px)",
+        WebkitBackdropFilter: "blur(8px)",
         border: `1px solid ${tokens.border}`,
         borderRadius: "4px",
         padding: "16px",
@@ -39,6 +41,8 @@ export const ObligationDrawer: React.FC<ObligationDrawerProps> = ({
         fontFamily: tokens.fontFamily.mono,
         width: "100%",
         maxWidth: "360px",
+        boxShadow: "0 12px 36px rgba(0, 0, 0, 0.75)",
+        zIndex: 20,
         ...style,
       }}
     >

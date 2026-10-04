@@ -11,6 +11,7 @@ export interface LoomCanvasProps {
   netThreads: LoomThread[];
   unweaveProgress?: number;
   onKnotSelect?: (knot: LoomKnot | null) => void;
+  selectedKnot?: LoomKnot | null;
   className?: string;
   width?: number | string;
   height?: number | string;
@@ -22,6 +23,7 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
   netThreads,
   unweaveProgress = 0,
   onKnotSelect,
+  selectedKnot,
   className = "",
   width = "100%",
   height = 540,
@@ -85,6 +87,12 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
     }
   }, [unweaveProgress]);
 
+  useEffect(() => {
+    if (engineRef.current) {
+      engineRef.current.setSelectedKnot(selectedKnot ?? null);
+    }
+  }, [selectedKnot]);
+
   const handleZoomIn = useCallback(() => {
     if (engineRef.current) {
       const nextZoom = Math.min(3.0, zoomLevel * 1.2);
@@ -113,26 +121,76 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden select-none border border-slate-800 rounded bg-[#0A0D12] ${className}`}
+      className={className}
       style={{
+        position: "relative",
         width,
         height,
         borderColor: tokens.border,
-        background: tokens.bg,
+        backgroundColor: tokens.bg,
+        borderRadius: "4px",
+        overflow: "hidden",
+        userSelect: "none",
+        border: `1px solid ${tokens.border}`,
       }}
     >
       <canvas
         ref={canvasRef}
-        className="w-full h-full block cursor-grab active:cursor-grabbing"
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "block",
+          cursor: "grab",
+        }}
       />
 
-      {/* Floating 2.5D Camera Controls */}
-      <div className="absolute top-3 right-3 flex items-center gap-1.5 bg-[#111620]/90 backdrop-blur-sm px-2 py-1.5 rounded border border-[#1E2638] shadow-lg">
+      {/* Floating 2.5D Camera Controls - Theme matched in Obsidian & Emerald */}
+      <div
+        style={{
+          position: "absolute",
+          top: "12px",
+          left: "12px",
+          display: "flex",
+          alignItems: "center",
+          gap: "4px",
+          backgroundColor: "rgba(17, 22, 32, 0.92)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
+          padding: "4px 8px",
+          borderRadius: "4px",
+          border: `1px solid ${tokens.border}`,
+          boxShadow: "0 4px 14px rgba(0, 0, 0, 0.45)",
+          zIndex: 5,
+        }}
+      >
         <button
           type="button"
           onClick={handleZoomIn}
           title="Zoom In"
-          className="w-7 h-7 flex items-center justify-center text-xs font-mono text-slate-300 hover:text-emerald-400 hover:bg-[#18202F] rounded border border-transparent hover:border-slate-700 transition-colors"
+          style={{
+            width: "26px",
+            height: "26px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: tokens.fontFamily.mono,
+            fontSize: "14px",
+            fontWeight: 700,
+            color: tokens.textSecondary,
+            backgroundColor: tokens.panel,
+            borderRadius: "3px",
+            border: `1px solid ${tokens.borderSubtle}`,
+            cursor: "pointer",
+            transition: "all 0.15s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = tokens.active;
+            e.currentTarget.style.borderColor = tokens.active;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = tokens.textSecondary;
+            e.currentTarget.style.borderColor = tokens.borderSubtle;
+          }}
         >
           +
         </button>
@@ -140,30 +198,98 @@ export const LoomCanvas: React.FC<LoomCanvasProps> = ({
           type="button"
           onClick={handleZoomOut}
           title="Zoom Out"
-          className="w-7 h-7 flex items-center justify-center text-xs font-mono text-slate-300 hover:text-emerald-400 hover:bg-[#18202F] rounded border border-transparent hover:border-slate-700 transition-colors"
+          style={{
+            width: "26px",
+            height: "26px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: tokens.fontFamily.mono,
+            fontSize: "14px",
+            fontWeight: 700,
+            color: tokens.textSecondary,
+            backgroundColor: tokens.panel,
+            borderRadius: "3px",
+            border: `1px solid ${tokens.borderSubtle}`,
+            cursor: "pointer",
+            transition: "all 0.15s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = tokens.active;
+            e.currentTarget.style.borderColor = tokens.active;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = tokens.textSecondary;
+            e.currentTarget.style.borderColor = tokens.borderSubtle;
+          }}
         >
           -
         </button>
-        <div className="h-4 w-[1px] bg-[#1E2638] mx-0.5" />
+        <div style={{ width: "1px", height: "16px", backgroundColor: tokens.border, margin: "0 3px" }} />
         <button
           type="button"
           onClick={handleResetCamera}
           title="Reset Camera Position"
-          className="px-2 h-7 flex items-center justify-center text-[10px] font-mono uppercase tracking-wider text-slate-400 hover:text-emerald-400 hover:bg-[#18202F] rounded border border-transparent hover:border-slate-700 transition-colors"
+          style={{
+            height: "26px",
+            padding: "0 8px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontFamily: tokens.fontFamily.mono,
+            fontSize: "10px",
+            fontWeight: 700,
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+            color: tokens.textSecondary,
+            backgroundColor: tokens.panel,
+            borderRadius: "3px",
+            border: `1px solid ${tokens.borderSubtle}`,
+            cursor: "pointer",
+            transition: "all 0.15s ease",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = tokens.success;
+            e.currentTarget.style.borderColor = tokens.success;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = tokens.textSecondary;
+            e.currentTarget.style.borderColor = tokens.borderSubtle;
+          }}
         >
           Reset
         </button>
       </div>
 
       {/* Overlay Visual Legend */}
-      <div className="absolute bottom-3 left-3 flex items-center gap-4 bg-[#111620]/80 backdrop-blur-sm px-3 py-1.5 rounded border border-[#1E2638] text-[10px] font-mono text-slate-400">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-[2px] bg-cyan-400 inline-block" />
-          <span>Gross Bilateral Debt</span>
+      <div
+        style={{
+          position: "absolute",
+          bottom: "12px",
+          left: "12px",
+          display: "flex",
+          alignItems: "center",
+          gap: "14px",
+          backgroundColor: "rgba(17, 22, 32, 0.90)",
+          backdropFilter: "blur(6px)",
+          WebkitBackdropFilter: "blur(6px)",
+          padding: "6px 12px",
+          borderRadius: "4px",
+          border: `1px solid ${tokens.border}`,
+          fontFamily: tokens.fontFamily.mono,
+          fontSize: "10px",
+          color: tokens.textMuted,
+          zIndex: 5,
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ width: "12px", height: "2px", backgroundColor: tokens.active, display: "inline-block" }} />
+          <span style={{ color: tokens.textSecondary }}>Gross Bilateral Debt</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2.5 h-[2.5px] bg-emerald-400 inline-block shadow-[0_0_8px_#10B981]" />
-          <span>Multilateral Net Path</span>
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ width: "12px", height: "2.5px", backgroundColor: tokens.success, display: "inline-block", boxShadow: "0 0 8px #10B981" }} />
+          <span style={{ color: tokens.textPrimary }}>Multilateral Net Path</span>
         </div>
       </div>
     </div>

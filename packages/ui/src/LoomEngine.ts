@@ -138,7 +138,7 @@ export class LoomEngine {
       const dx = worldPos.x - knot.x;
       const dy = worldPos.y - knot.y;
       const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist <= knot.radius + 6) {
+      if (dist <= knot.radius + 14) {
         hit = knot;
         break;
       }
@@ -161,7 +161,7 @@ export class LoomEngine {
       for (const knot of this.knots) {
         const dx = worldPos.x - knot.x;
         const dy = worldPos.y - knot.y;
-        if (Math.sqrt(dx * dx + dy * dy) <= knot.radius + 6) {
+        if (Math.sqrt(dx * dx + dy * dy) <= knot.radius + 14) {
           clicked = knot;
           break;
         }
@@ -267,10 +267,12 @@ export class LoomEngine {
 
   private render(): void {
     const { canvas, ctx } = this;
-    const width = canvas.width;
-    const height = canvas.height;
+    const dpr = window.devicePixelRatio || 1;
+    const width = canvas.width / dpr;
+    const height = canvas.height / dpr;
 
     ctx.save();
+    ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
 
     // Deep Obsidian Base
