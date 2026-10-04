@@ -8,7 +8,11 @@
     "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@norn/ui": ["../../packages/ui/src/index.ts"]
+    }
   },
   "include": ["src/**/*"]
 }

@@ -6,6 +6,11 @@ const rootDir = import.meta.dirname || resolve(".");
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@norn/ui": resolve(rootDir, "../../packages/ui/src/index.ts"),
+    },
+  },
   server: {
     port: 3002,
   },
