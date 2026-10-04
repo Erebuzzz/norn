@@ -22,7 +22,23 @@ Many threads. One settlement.
 
 ---
 
-## Product Launch Video (/brag)
+## Video Demonstrations
+
+### 1. Full Platform Demo & Walkthrough (60 Seconds)
+
+> Comprehensive interactive demonstration of the live 2.5D Loom Canvas, Participant Node inspector, Mission Control Arena, interactive unweaving scrubber, Genesis Crisis -40% liquidity shock, and dual-chain settlement on Arbitrum Stylus and Robinhood Chain.
+
+<p align="center">
+  <a href="assets/norn-demo.webm" title="Watch Full Platform Demo">
+    <img src="assets/demo-poster.jpg" alt="NORN Full Platform Demo Preview" width="100%" />
+  </a>
+</p>
+
+<p align="center">
+  <em>Click image above or open <a href="assets/norn-demo.webm"><code>assets/norn-demo.webm</code></a> to watch the 60-second interactive platform demo.</em>
+</p>
+
+### 2. Cinematic Launch Video (/brag)
 
 > 20-second cinematic overview of NORN obligation unweaving, cycle canceling, and sub-second settlement on Arbitrum Stylus and Robinhood Chain.
 
