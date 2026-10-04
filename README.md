@@ -2,6 +2,16 @@
 
 Multilateral clearing and liquidity layer for autonomous machine payments.
 
+[![Website](https://img.shields.io/badge/Live%20Platform-norn--network.vercel.app-06B6D4?style=flat-square)](https://norn-network.vercel.app)
+[![Arena](https://img.shields.io/badge/Mission%20Control-norn--network.vercel.app%2Farena-10B981?style=flat-square)](https://norn-network.vercel.app/arena)
+[![Arbitrum](https://img.shields.io/badge/Arbitrum-Sepolia%20%2F%20Stylus-213147?style=flat-square&logo=arbitrum)](https://docs.arbitrum.io)
+[![Robinhood Chain](https://img.shields.io/badge/Robinhood%20Chain-46630-00C805?style=flat-square)](https://docs.robinhood.com/chain/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+
+* **Live Platform & Visualizer**: [https://norn-network.vercel.app](https://norn-network.vercel.app)
+* **Mission Control Arena**: [https://norn-network.vercel.app/arena](https://norn-network.vercel.app/arena)
+* **Source Repository**: [https://github.com/Erebuzzz/norn](https://github.com/Erebuzzz/norn)
+
 ```text
 Many threads. One settlement.
 ```
